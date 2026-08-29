@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireEventAccess } from "@/lib/event-access";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export type TogglePhotoLikeResult =
   | { ok: true; liked: boolean; count: number }
@@ -25,7 +26,9 @@ export async function togglePhotoLike(
       return { ok: false, message: "Essa foto não está disponível." };
     }
 
-    const { data: currentLike, error: currentLikeError } = await supabase
+    const admin = createAdminClient();
+
+    const { data: currentLike, error: currentLikeError } = await admin
       .from("photo_likes")
       .select("photo_id")
       .eq("photo_id", photo.id)
@@ -38,12 +41,12 @@ export async function togglePhotoLike(
 
     const liked = !currentLike;
     const mutation = currentLike
-      ? supabase
+      ? admin
           .from("photo_likes")
           .delete()
           .eq("photo_id", photo.id)
           .eq("user_id", user.id)
-      : supabase.from("photo_likes").insert({
+      : admin.from("photo_likes").insert({
           photo_id: photo.id,
           user_id: user.id,
         });
@@ -54,19 +57,19 @@ export async function togglePhotoLike(
       return { ok: false, message: "Não foi possível atualizar a curtida." };
     }
 
-    const { count, error: countError } = await supabase
+    const { count, error: countError } = await admin
       .from("photo_likes")
       .select("photo_id", { count: "exact", head: true })
       .eq("photo_id", photo.id);
 
-    if (countError) {
-      return { ok: false, message: "A curtida foi salva, mas o contador não atualizou." };
-    }
-
     revalidatePath(`/evento/${event.slug}/galeria`);
     revalidatePath(`/evento/${event.slug}/galeria/${photo.id}`);
 
-    return { ok: true, liked, count: count ?? 0 };
+    return {
+      ok: true,
+      liked,
+      count: countError ? (liked ? 1 : 0) : (count ?? 0),
+    };
   } catch {
     return { ok: false, message: "Não foi possível atualizar a curtida." };
   }

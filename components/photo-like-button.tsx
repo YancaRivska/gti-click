@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { HeartIcon } from "@/components/gti-ui";
 import { togglePhotoLike } from "@/app/evento/[slug]/galeria/like-actions";
 
@@ -23,6 +23,15 @@ export function PhotoLikeButton({
   const [count, setCount] = useState(initialCount);
   const [message, setMessage] = useState("");
   const [pending, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (!message) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => setMessage(""), 2600);
+    return () => window.clearTimeout(timer);
+  }, [message]);
 
   function handleLike() {
     if (pending || !enabled) {
@@ -80,9 +89,11 @@ export function PhotoLikeButton({
           <strong>{count}</strong>
         )}
       </button>
-      <span className="sr-only" role="status" aria-live="polite">
-        {message}
-      </span>
+      {message && (
+        <span className="like-feedback" role="status" aria-live="polite">
+          {message}
+        </span>
+      )}
     </div>
   );
 }

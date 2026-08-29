@@ -2275,6 +2275,27 @@ label:has(input[type="file"]:not(:disabled)) {
   opacity: 0.45;
 }
 
+.like-feedback {
+  position: fixed;
+  z-index: 120;
+  right: 1rem;
+  bottom: calc(6.2rem + env(safe-area-inset-bottom));
+  left: 1rem;
+  width: fit-content;
+  max-width: min(24rem, calc(100vw - 2rem));
+  margin-inline: auto;
+  border: 1px solid rgb(216 180 254 / 16%);
+  border-radius: 999px;
+  padding: 0.65rem 0.9rem;
+  color: #f5f3ff;
+  background: rgb(14 10 24 / 94%);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-align: center;
+  box-shadow: 0 14px 42px rgb(0 0 0 / 42%), 0 0 24px rgb(126 34 206 / 14%);
+  backdrop-filter: blur(14px);
+}
+
 .media-action-bar {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }

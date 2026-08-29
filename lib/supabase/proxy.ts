@@ -34,7 +34,11 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
 
-  if (!claims && request.nextUrl.pathname.startsWith("/evento")) {
+  if (
+    !claims &&
+    request.nextUrl.pathname.startsWith("/evento") &&
+    request.nextUrl.pathname !== "/evento/entrar"
+  ) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set(
       "next",

@@ -1,37 +1,47 @@
 "use client";
 
+import { useFormStatus } from "react-dom";
 import { TrashIcon } from "@/components/gti-ui";
 import { deleteOwnPhoto } from "./actions";
+
+function DeleteButton({ variant }: { variant: "detail" | "card" }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className={variant === "card" ? "gallery-card-action is-danger" : "media-action media-action-danger"}
+      aria-label={variant === "card" ? "Excluir minha foto" : undefined}
+    >
+      <TrashIcon className={variant === "card" ? "size-3.5" : "size-5"} />
+      <span>{pending ? "Excluindo..." : variant === "card" ? "Excluir" : "Excluir foto"}</span>
+    </button>
+  );
+}
 
 export function DeleteOwnPhotoButton({
   eventSlug,
   photoId,
+  variant = "detail",
 }: {
   eventSlug: string;
   photoId: string;
+  variant?: "detail" | "card";
 }) {
   return (
     <form
       action={deleteOwnPhoto}
+      className={variant === "card" ? "min-w-0 flex-1" : "min-w-0"}
       onSubmit={(event) => {
-        if (
-          !window.confirm(
-            "Excluir sua foto permanentemente? Essa ação não poderá ser desfeita.",
-          )
-        ) {
+        if (!window.confirm("Excluir esta foto permanentemente? Essa ação não poderá ser desfeita.")) {
           event.preventDefault();
         }
       }}
     >
       <input type="hidden" name="eventSlug" value={eventSlug} />
       <input type="hidden" name="photoId" value={photoId} />
-      <button
-        type="submit"
-        className="secondary-button w-full border-red-300/15 text-red-200/80 hover:border-red-300/25 hover:bg-red-400/[0.07]"
-      >
-        <TrashIcon className="size-4" />
-        Excluir minha foto
-      </button>
+      <DeleteButton variant={variant} />
     </form>
   );
 }

@@ -28,7 +28,7 @@ export function SharePhotoButton() {
   }
 
   return (
-    <button type="button" onClick={share} className="photo-action w-full">
+    <button type="button" onClick={share} className="media-action media-action-secondary">
       <ShareIcon className="size-5" />
       {copied ? "Link copiado" : "Compartilhar"}
     </button>

@@ -80,7 +80,7 @@ export default function EventEntryPage() {
                 <SparklesIcon className="size-3.5" />
                 Álbum exclusivo
               </span>
-              <h1 className="mt-4 max-w-xs text-[2.7rem] leading-[0.9] font-black tracking-[-0.065em] text-white sm:text-5xl lg:text-6xl">
+              <h1 className="mt-4 max-w-xs text-[2.3rem] leading-[0.92] font-black tracking-[-0.06em] text-white sm:text-5xl lg:text-6xl">
                 Seu próximo <span className="text-gradient">click</span> começa aqui.
               </h1>
               <p className="mt-4 max-w-60 text-sm leading-relaxed text-slate-400 sm:max-w-xs sm:text-base">

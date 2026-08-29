@@ -32,7 +32,8 @@ export default async function EventPage({
   const { data: eventPhotos } = await supabase
     .from("photo_uploads")
     .select("user_id")
-    .eq("event_id", event.id);
+    .eq("event_id", event.id)
+    .neq("moderation_status", "rejected");
   const photoCount = eventPhotos?.length ?? 0;
   const participantCount = new Set(
     eventPhotos?.map((photo) => photo.user_id) ?? [],

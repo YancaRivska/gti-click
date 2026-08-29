@@ -8,9 +8,10 @@ Execute somente:
 
 ```text
 migrations/20260829_launch_hardening.sql
+migrations/20260829_auto_publish_team_photos.sql
 ```
 
-Essa migration adiciona as colunas opcionais ausentes, preserva fotos antigas como aprovadas, força novos uploads como pendentes, mantém o bucket privado e substitui as políticas de leitura/exclusão pelas versões restritas.
+O primeiro script consolida colunas e políticas. O segundo converte pendências existentes e configura novos uploads da equipe como `approved`, sem liberar `UPDATE` para o cliente.
 
 ## Projeto novo
 
@@ -27,8 +28,8 @@ Os demais arquivos da raiz são migrations históricas mantidas para rastreabili
 - Tamanho máximo: 10 MB.
 - MIME types: JPEG, PNG e WebP.
 - Participantes inserem somente em `aws-summit-sp-2026/<auth.uid()>/`.
-- Novas fotos recebem `moderation_status = 'pending'`.
-- Fotos aprovadas são visíveis a participantes consentidos.
+- Novas fotos recebem `moderation_status = 'approved'` pelo default do banco.
+- Fotos publicadas são visíveis a participantes consentidos.
 - Fotos pendentes/rejeitadas só são consultáveis pelo próprio autor.
 - Participantes não têm permissão de `UPDATE` em `photo_uploads`.
 - Exclusão só alcança registros e objetos do próprio usuário.

@@ -12,9 +12,11 @@ import {
   ShieldIcon,
 } from "@/components/gti-ui";
 import { requireEventAccess } from "@/lib/event-access";
+import { DeleteOwnPhotoButton } from "./[photoId]/delete-own-photo-button";
 
 const BUCKET = "event-photos";
 const SIGNED_URL_DURATION = 60 * 10;
+const DOWNLOAD_URL_DURATION = 60 * 5;
 
 export default async function GalleryPage({
   params,
@@ -24,13 +26,14 @@ export default async function GalleryPage({
   searchParams: Promise<{ deleted?: string | string[] }>;
 }) {
   const { slug } = await params;
-  const { event, supabase } = await requireEventAccess(slug);
+  const { event, supabase, user } = await requireEventAccess(slug);
   const query = await searchParams;
 
   const { data: photos, error: photosError } = await supabase
     .from("photo_uploads")
-    .select("id, storage_path, caption, instagram_handle, created_at")
+    .select("id, user_id, storage_path, caption, instagram_handle, created_at")
     .eq("event_id", event.id)
+    .neq("moderation_status", "rejected")
     .order("created_at", { ascending: false });
 
   if (photosError) {
@@ -54,9 +57,10 @@ export default async function GalleryPage({
   }
 
   const paths = photos.map((photo) => photo.storage_path);
-  const signedResult = await supabase.storage
-    .from(BUCKET)
-    .createSignedUrls(paths, SIGNED_URL_DURATION);
+  const [signedResult, downloadResult] = await Promise.all([
+    supabase.storage.from(BUCKET).createSignedUrls(paths, SIGNED_URL_DURATION),
+    supabase.storage.from(BUCKET).createSignedUrls(paths, DOWNLOAD_URL_DURATION, { download: true }),
+  ]);
 
   if (signedResult.error) {
     return (
@@ -67,9 +71,10 @@ export default async function GalleryPage({
   }
 
   const signedUrls = new Map(signedResult.data.map((photo) => [photo.path, photo.signedUrl]));
+  const downloadUrls = new Map(downloadResult.data?.map((photo) => [photo.path, photo.signedUrl]) ?? []);
   const visiblePhotos = photos.flatMap((photo) => {
     const signedUrl = signedUrls.get(photo.storage_path);
-    return signedUrl ? [{ ...photo, signedUrl }] : [];
+    return signedUrl ? [{ ...photo, signedUrl, downloadUrl: downloadUrls.get(photo.storage_path) }] : [];
   });
 
   if (!visiblePhotos.length) {
@@ -92,28 +97,40 @@ export default async function GalleryPage({
         <p role="status" className="mb-4 rounded-xl border border-emerald-300/10 bg-emerald-400/[0.055] px-3 py-2.5 text-xs text-emerald-100/85">Foto excluída com sucesso.</p>
       )}
 
-      <div className="gallery-wall">
-        {visiblePhotos.map((photo, index) => (
-          <article key={photo.id} className="gallery-tile group">
-            <Link href={`/evento/${event.slug}/galeria/${photo.id}`} className="relative block">
+      <div className="gallery-grid">
+        {visiblePhotos.map((photo) => (
+          <article key={photo.id} className="gallery-card group">
+            <Link href={`/evento/${event.slug}/galeria/${photo.id}`} className="gallery-card-media">
               <Image
                 src={photo.signedUrl}
                 alt={photo.caption || "Foto do evento"}
-                width={900}
-                height={1100}
+                width={720}
+                height={900}
                 unoptimized
-                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                className={`${index % 5 === 0 ? "aspect-[3/4]" : index % 4 === 0 ? "aspect-[4/5]" : "aspect-square"} w-full object-cover`}
+                sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, 25vw"
+                className="aspect-[4/5] w-full object-cover"
               />
-              {(photo.instagram_handle || photo.caption) && (
-                <div className="gallery-tile-overlay pr-12">
-                  {photo.instagram_handle && <p className="truncate text-[0.68rem] font-black text-white">{photo.instagram_handle}</p>}
-                  {photo.caption && <p className="mt-0.5 line-clamp-1 text-[0.58rem] text-white/65">{photo.caption}</p>}
-                </div>
-              )}
+              <span className="gallery-date">{dateFormatter.format(new Date(photo.created_at))}</span>
             </Link>
-            <span className="absolute top-2 left-2 rounded-full bg-black/48 px-2 py-1 text-[0.54rem] font-semibold text-white/70 backdrop-blur">{dateFormatter.format(new Date(photo.created_at))}</span>
-            <Link href={`/evento/${event.slug}/galeria/${photo.id}`} aria-label="Abrir foto para baixar" className="gallery-download"><DownloadIcon className="size-4" /></Link>
+            <div className="gallery-card-body">
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="gallery-avatar">{(photo.instagram_handle?.replace("@", "").charAt(0) || "G").toUpperCase()}</span>
+                <p className="min-w-0 flex-1 truncate text-[0.72rem] font-black text-white">{photo.instagram_handle || "Equipe GTI"}</p>
+              </div>
+              <p className={`mt-2 line-clamp-2 min-h-[2.25rem] text-[0.66rem] leading-[1.15rem] ${photo.caption ? "text-slate-400" : "italic text-slate-600"}`}>{photo.caption || "Um click da galera."}</p>
+              <div className="mt-3 flex gap-1.5 border-t border-white/6 pt-2.5">
+                {photo.downloadUrl ? (
+                  <a href={photo.downloadUrl} download className="gallery-card-action" aria-label="Baixar foto">
+                    <DownloadIcon className="size-3.5" /><span>Baixar</span>
+                  </a>
+                ) : (
+                  <Link href={`/evento/${event.slug}/galeria/${photo.id}`} className="gallery-card-action" aria-label="Abrir foto para baixar">
+                    <DownloadIcon className="size-3.5" /><span>Abrir</span>
+                  </Link>
+                )}
+                {photo.user_id === user.id && <DeleteOwnPhotoButton eventSlug={event.slug} photoId={photo.id} variant="card" />}
+              </div>
+            </div>
           </article>
         ))}
       </div>

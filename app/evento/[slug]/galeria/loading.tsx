@@ -10,10 +10,15 @@ export default function GalleryLoading() {
           <span className="skeleton size-11 rounded-full" />
         </header>
         <div className="mb-3 border-y border-white/6 py-2.5"><div className="skeleton h-7 w-16 rounded-full" /></div>
-        <div className="gallery-wall">
-          {Array.from({ length: 12 }, (_, index) => (
-            <div key={index} className="gallery-tile">
-              <div className={`skeleton ${index % 5 === 0 ? "aspect-[3/4]" : index % 4 === 0 ? "aspect-[4/5]" : "aspect-square"}`} />
+        <div className="gallery-grid">
+          {Array.from({ length: 10 }, (_, index) => (
+            <div key={index} className="gallery-card">
+              <div className="skeleton aspect-[4/5]" />
+              <div className="gallery-card-body">
+                <div className="flex items-center gap-2"><span className="skeleton size-6 rounded-full" /><span className="skeleton h-2.5 w-16 rounded-full" /></div>
+                <div className="skeleton mt-3 h-8 rounded-lg" />
+                <div className="mt-3 flex gap-1.5"><span className="skeleton h-9 flex-1 rounded-lg" /><span className="skeleton h-9 flex-1 rounded-lg" /></div>
+              </div>
             </div>
           ))}
         </div>

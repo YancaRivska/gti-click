@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import {
   AppShell,
@@ -260,9 +261,12 @@ export function PhotoUploadForm({
           )}
 
           {status === "success" && (
-            <div role="status" className="mt-5 flex gap-3 rounded-2xl border border-emerald-300/12 bg-gradient-to-br from-emerald-400/[0.07] to-violet-500/[0.06] p-4 text-emerald-100">
+            <div role="status" className="mt-5 rounded-2xl border border-emerald-300/12 bg-gradient-to-br from-emerald-400/[0.07] to-violet-500/[0.06] p-4 text-emerald-100">
+              <div className="flex gap-3">
               <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-emerald-400/10"><CheckIcon className="size-5" /></span>
               <div><p className="font-black">Foto publicada! 💜</p><p className="mt-1 text-sm text-slate-400">Essa memória já está na galeria da galera.</p></div>
+              </div>
+              <Link href={`/evento/${eventSlug}/galeria`} className="secondary-button mt-4 w-full">Ver na galeria</Link>
             </div>
           )}
 

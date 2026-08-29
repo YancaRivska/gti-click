@@ -32,6 +32,7 @@ export default async function PhotoDetailPage({
     .select("id, user_id, storage_path, caption, instagram_handle, created_at")
     .eq("id", photoId)
     .eq("event_id", event.id)
+    .neq("moderation_status", "rejected")
     .maybeSingle();
 
   if (!photo) {
@@ -44,7 +45,7 @@ export default async function PhotoDetailPage({
   const [signedResult, downloadResult, relatedResult] = await Promise.all([
     supabase.storage.from(BUCKET).createSignedUrl(photo.storage_path, SIGNED_URL_DURATION),
     supabase.storage.from(BUCKET).createSignedUrl(photo.storage_path, DOWNLOAD_URL_DURATION, { download: downloadName }),
-    supabase.from("photo_uploads").select("id, storage_path, caption").eq("event_id", event.id).neq("id", photo.id).order("created_at", { ascending: false }).limit(5),
+    supabase.from("photo_uploads").select("id, storage_path, caption").eq("event_id", event.id).neq("moderation_status", "rejected").neq("id", photo.id).order("created_at", { ascending: false }).limit(5),
   ]);
 
   if (signedResult.error || downloadResult.error) {
@@ -100,11 +101,15 @@ export default async function PhotoDetailPage({
           <Image src={signedResult.data.signedUrl} alt={photo.caption || "Foto do evento"} width={1600} height={1400} unoptimized priority sizes="(max-width: 768px) 100vw, 48rem" className="max-h-[72svh] min-h-80 w-full object-contain" />
         </div>
 
-        <section className="px-4 pt-3 sm:px-7">
-          <div className="grid grid-cols-3 border-b border-white/7 pb-2">
-            <a href={downloadResult.data.signedUrl} download className="photo-action"><DownloadIcon className="size-5" />Baixar</a>
+        <section className="px-4 pt-4 sm:px-7">
+          <div className="media-action-bar">
+            <a href={downloadResult.data.signedUrl} download className="media-action media-action-primary"><DownloadIcon className="size-5" />Baixar</a>
             <SharePhotoButton />
-            <a href={`mailto:administracao@galeradoti.com?subject=${reportSubject}&body=${reportBody}`} className="photo-action text-red-200/60 hover:text-red-200"><FlagIcon className="size-5" />Reportar</a>
+            {photo.user_id === user.id ? (
+              <DeleteOwnPhotoButton eventSlug={event.slug} photoId={photo.id} />
+            ) : (
+              <a href={`mailto:administracao@galeradoti.com?subject=${reportSubject}&body=${reportBody}`} className="media-action media-action-secondary"><FlagIcon className="size-5" />Reportar</a>
+            )}
           </div>
 
           {photo.caption ? <p className="py-5 text-sm leading-relaxed text-slate-300"><span className="mr-2 font-black text-white">{photo.instagram_handle || "GTI CLICK"}</span>{photo.caption}</p> : <p className="py-5 text-sm italic text-slate-600">Esse click fala por si só.</p>}
@@ -113,7 +118,6 @@ export default async function PhotoDetailPage({
             <ShieldIcon className="mt-0.5 size-3.5 shrink-0 text-violet-300" />O download usa um link temporário. A foto continua privada.
           </div>
 
-          {photo.user_id === user.id && <div className="mt-4"><DeleteOwnPhotoButton eventSlug={event.slug} photoId={photo.id} /></div>}
         </section>
 
         {relatedPhotos.length > 0 && (

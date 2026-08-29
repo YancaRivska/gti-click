@@ -174,13 +174,24 @@ function GalleryShell({
   return (
     <AppShell>
       <div className="mx-auto min-h-svh w-full max-w-7xl px-2.5 pb-28 pt-4 sm:px-6 lg:px-8 lg:pb-10">
-        <header className="gallery-header flex items-center justify-between px-1.5 pb-4 sm:px-0">
-          <Link href={`/evento/${eventSlug}`} aria-label="Voltar ao evento" className="icon-button rounded-full"><ArrowLeftIcon className="size-5" /></Link>
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-1.5"><h1 className="text-base font-black text-white">AWS Summit SP</h1><ApertureIcon className="size-3.5 text-violet-400" /></div>
-            <p className="mt-0.5 text-[0.62rem] text-slate-600">registros da galera</p>
+        <header className="gallery-event-banner">
+          <Image
+            src="/assets/gti-click/aws-summit-header.jpg"
+            alt="AWS Summit São Paulo"
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, 80rem"
+            className="gallery-event-banner-image object-cover"
+          />
+          <div className="gallery-event-banner-shade" aria-hidden="true" />
+          <div className="gallery-event-banner-controls">
+            <Link href={`/evento/${eventSlug}`} aria-label="Voltar ao evento" className="icon-button rounded-full"><ArrowLeftIcon className="size-5" /></Link>
+            <span className="gallery-count" aria-label={`${photoCount ?? 0} fotos`}>{photoCount ?? "—"}</span>
           </div>
-          <span className="gallery-count">{photoCount ?? "—"}</span>
+          <div className="gallery-event-banner-caption">
+            <h1 className="sr-only">AWS Summit São Paulo</h1>
+            <span><ApertureIcon className="size-3.5" />registros da galera</span>
+          </div>
         </header>
 
         <div className="gallery-toolbar mb-3 flex items-center justify-between px-1 py-2.5 sm:px-0">

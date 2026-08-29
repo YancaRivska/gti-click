@@ -1,33 +1,22 @@
-import { AppShell, GtiLogo, ShieldIcon } from "@/components/gti-ui";
+import { ApertureIcon, AppShell, ArrowLeftIcon } from "@/components/gti-ui";
 
 export default function GalleryLoading() {
   return (
     <AppShell>
-      <div className="mx-auto min-h-svh w-full max-w-7xl px-4 py-5 sm:px-8 sm:py-7 lg:px-10" aria-busy="true">
-        <header className="flex items-center justify-between border-b border-white/8 pb-5">
-          <GtiLogo />
-          <span className="flex items-center gap-2 text-[0.65rem] font-bold text-slate-500 sm:text-xs">
-            <ShieldIcon className="size-4 text-violet-300" />
-            Galeria privada
-          </span>
+      <div className="mx-auto min-h-svh w-full max-w-7xl px-2.5 pb-28 pt-4 sm:px-6 lg:px-8" aria-busy="true" aria-label="Carregando galeria">
+        <header className="flex items-center justify-between px-1.5 pb-4 sm:px-0">
+          <span className="icon-button rounded-full"><ArrowLeftIcon className="size-5" /></span>
+          <div className="text-center"><div className="flex items-center gap-1.5"><p className="text-base font-black text-white">AWS Summit SP</p><ApertureIcon className="size-3.5 text-violet-400" /></div><p className="mt-0.5 text-[0.62rem] text-slate-600">organizando os clicks...</p></div>
+          <span className="skeleton size-11 rounded-full" />
         </header>
-        <section className="py-8 sm:py-11">
-          <div className="skeleton h-4 w-44 rounded" />
-          <div className="skeleton mt-7 h-14 w-80 max-w-full rounded-xl" />
-          <div className="skeleton mt-4 h-4 w-96 max-w-full rounded" />
-          <p className="mt-5 text-xs font-semibold text-violet-300">Organizando os clicks...</p>
-          <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
-            {Array.from({ length: 8 }, (_, index) => (
-              <div key={index} className="overflow-hidden rounded-2xl border border-white/5">
-                <div className={`skeleton ${index % 5 === 0 ? "aspect-[4/5]" : "aspect-square"}`} />
-                <div className="bg-[#0a0814] p-3">
-                  <div className="skeleton h-3 w-2/3 rounded" />
-                  <div className="skeleton mt-3 h-3 w-1/2 rounded" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+        <div className="mb-3 border-y border-white/6 py-2.5"><div className="skeleton h-7 w-16 rounded-full" /></div>
+        <div className="gallery-wall">
+          {Array.from({ length: 12 }, (_, index) => (
+            <div key={index} className="gallery-tile">
+              <div className={`skeleton ${index % 5 === 0 ? "aspect-[3/4]" : index % 4 === 0 ? "aspect-[4/5]" : "aspect-square"}`} />
+            </div>
+          ))}
+        </div>
       </div>
     </AppShell>
   );

@@ -1,14 +1,12 @@
+import Image from "next/image";
 import Link from "next/link";
 import { logout } from "@/app/auth/actions";
 import {
   AppShell,
-  ArrowRightIcon,
-  CalendarIcon,
   CameraIcon,
   EventArtwork,
   GtiLogo,
   ImageIcon,
-  MapPinIcon,
   MobileEventNav,
   UploadIcon,
   UsersIcon,
@@ -44,100 +42,73 @@ export default async function EventPage({
 
   return (
     <AppShell>
-      <div className="mx-auto min-h-svh w-full max-w-7xl px-5 py-5 pb-24 sm:px-8 sm:py-7 lg:px-10 lg:pb-0">
-        <header className="flex items-center justify-between border-b border-white/8 pb-5">
-          <GtiLogo />
-          <div className="flex items-center gap-2 rounded-full border border-emerald-300/15 bg-emerald-400/8 px-3 py-1.5 text-[0.68rem] font-bold text-emerald-200">
+      <div className="mx-auto min-h-svh w-full max-w-5xl pb-28 lg:px-8 lg:pb-10 lg:pt-6">
+        <header className="flex items-center justify-between px-5 py-4 sm:px-7 lg:px-0">
+          <GtiLogo size="compact" />
+          <span className="flex items-center gap-2 rounded-full border border-emerald-300/12 bg-emerald-400/[0.055] px-3 py-1.5 text-[0.65rem] font-bold text-emerald-200/90">
             <span className="size-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_#4ade80]" />
-            Participante conectado
-          </div>
+            Evento liberado
+          </span>
         </header>
 
-        <section className="grid gap-8 py-8 lg:grid-cols-[1.08fr_.92fr] lg:items-stretch lg:py-12">
+        <section className="lg:grid lg:grid-cols-[1.06fr_.94fr] lg:gap-7">
           <EventArtwork name={event.nome} date={event.data} location={event.local} />
 
-          <div className="glass-panel flex flex-col rounded-[1.75rem] p-6 sm:p-8">
-            <span className="eyebrow w-fit">
-              <span className="eyebrow-dot" />
-              Seu evento
-            </span>
-            <h1 className="mt-5 text-3xl leading-tight font-black tracking-[-0.045em] text-white sm:text-5xl">
+          <div className="px-5 pt-7 sm:px-7 lg:flex lg:flex-col lg:px-0 lg:pt-3">
+            <span className="eyebrow"><span className="eyebrow-dot" />Evento da galera</span>
+            <h1 className="mt-4 text-[2.15rem] leading-[0.98] font-black tracking-[-0.055em] text-white sm:text-5xl">
               A Galera do TI tá no Summit! 📸
             </h1>
-            <p className="mt-4 leading-relaxed text-slate-400">
+            <p className="mt-4 max-w-lg text-sm leading-relaxed text-slate-400 sm:text-base">
               Registre, compartilhe e reviva os melhores momentos com a galera.
             </p>
 
-            <div className="mt-7 grid grid-cols-2 gap-3">
-              <div className="soft-panel rounded-2xl p-4">
-                <ImageIcon className="size-5 text-violet-300" />
-                <p className="mt-3 text-2xl font-black text-white">{photoCount}</p>
-                <p className="mt-1 text-xs text-slate-500">fotos na galeria</p>
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <div className="stat-chip">
+                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-violet-500/12 text-violet-200"><ImageIcon className="size-5" /></span>
+                <div><p className="text-xl font-black text-white">{photoCount}</p><p className="text-[0.65rem] text-slate-500">fotos</p></div>
               </div>
-              <div className="soft-panel rounded-2xl p-4">
-                <UsersIcon className="size-5 text-violet-300" />
-                <p className="mt-3 text-2xl font-black text-white">{participantCount}</p>
-                <p className="mt-1 text-xs text-slate-500">participantes no álbum</p>
+              <div className="stat-chip">
+                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-fuchsia-500/10 text-fuchsia-200"><UsersIcon className="size-5" /></span>
+                <div><p className="text-xl font-black text-white">{participantCount}</p><p className="text-[0.65rem] text-slate-500">participantes</p></div>
               </div>
             </div>
 
-            <div className="mt-auto grid gap-3 pt-7 sm:grid-cols-2">
-              <Link href={`/evento/${event.slug}/enviar`} className="gradient-button w-full">
-                <CameraIcon className="size-5" />
-                Enviar foto
+            <div className="mt-6 grid gap-3">
+              <Link href={`/evento/${event.slug}/enviar`} className="gradient-button w-full text-base">
+                <CameraIcon className="size-5" />Enviar foto
               </Link>
-              <Link href={`/evento/${event.slug}/galeria`} className="secondary-button w-full">
-                <ImageIcon className="size-5 text-violet-300" />
-                Ver galeria
+              <Link href={`/evento/${event.slug}/galeria`} className="secondary-button w-full text-base">
+                <ImageIcon className="size-5 text-violet-300" />Ver galeria
               </Link>
+            </div>
+
+            <div className="relative mt-6 hidden min-h-32 overflow-hidden rounded-2xl border border-white/7 bg-white/[0.025] p-4 sm:block lg:mt-auto">
+              <div className="relative z-10 max-w-[64%]">
+                <UploadIcon className="size-5 text-violet-300" />
+                <p className="mt-3 text-sm font-black text-white">Seu olhar também faz parte.</p>
+                <p className="mt-1 text-xs leading-relaxed text-slate-500">Cada click aprovado ajuda a contar a história desse dia.</p>
+              </div>
+              <div className="absolute right-2 bottom-0 h-32 w-32">
+                <Image src="/assets/gti-click/mascot-camera.jpg" alt="Mascote GTI CLICK com câmera" fill sizes="8rem" className="object-contain object-bottom mix-blend-screen" />
+              </div>
             </div>
           </div>
         </section>
 
         {error === "revoke" && (
-          <p role="alert" className="mb-6 rounded-xl border border-red-400/15 bg-red-400/8 px-4 py-3 text-sm text-red-200">
+          <p role="alert" className="mx-5 mt-5 rounded-xl border border-red-300/10 bg-red-400/[0.055] px-4 py-3 text-sm text-red-200/85 sm:mx-7 lg:mx-0">
             Não foi possível revogar o consentimento. Tente novamente.
           </p>
         )}
 
-        <section className="grid gap-4 pb-10 sm:grid-cols-2 lg:grid-cols-3">
-          <Link href={`/evento/${event.slug}/enviar`} className="action-card group">
-            <span className="grid size-11 place-items-center rounded-2xl bg-violet-500/12 text-violet-200">
-              <UploadIcon className="size-5" />
-            </span>
-            <h2 className="mt-5 text-lg font-black text-white">Seu click na galeria</h2>
-            <p className="mt-2 text-sm leading-relaxed text-slate-500">Envie em poucos passos. A equipe aprova antes da publicação.</p>
-            <ArrowRightIcon className="mt-5 size-5 text-violet-300 transition group-hover:translate-x-1" />
-          </Link>
-          <Link href={`/evento/${event.slug}/galeria`} className="action-card group">
-            <span className="grid size-11 place-items-center rounded-2xl bg-fuchsia-500/10 text-fuchsia-200">
-              <ImageIcon className="size-5" />
-            </span>
-            <h2 className="mt-5 text-lg font-black text-white">Memórias da galera</h2>
-            <p className="mt-2 text-sm leading-relaxed text-slate-500">Veja e baixe os registros aprovados do evento.</p>
-            <ArrowRightIcon className="mt-5 size-5 text-fuchsia-300 transition group-hover:translate-x-1" />
-          </Link>
-          <div className="action-card sm:col-span-2 lg:col-span-1">
-            <div className="flex gap-3">
-              <CalendarIcon className="mt-0.5 size-5 shrink-0 text-violet-300" />
-              <div><p className="text-sm font-bold text-white">{event.data}</p><p className="mt-1 text-xs text-slate-500">Data do evento</p></div>
-            </div>
-            <div className="mt-5 flex gap-3 border-t border-white/8 pt-5">
-              <MapPinIcon className="mt-0.5 size-5 shrink-0 text-violet-300" />
-              <div><p className="text-sm font-bold text-white">{event.local}</p><p className="mt-1 text-xs text-slate-500">Localização</p></div>
-            </div>
-          </div>
-        </section>
-
-        <footer className="flex flex-col gap-4 border-t border-white/8 py-6 text-sm sm:flex-row sm:items-center sm:justify-between">
-          <Link href="/" className="text-slate-500 transition hover:text-white">Voltar ao início</Link>
-          <div className="flex flex-wrap items-center gap-1">
-            <form action={logout}>
-              <button type="submit" className="px-3 py-2 font-semibold text-slate-500 transition hover:text-white">Sair</button>
-            </form>
-            <RevokeConsentButton eventSlug={event.slug} />
-          </div>
+        <footer className="mx-5 mt-8 flex items-center justify-between border-t border-white/7 py-5 text-xs sm:mx-7 lg:mx-0">
+          <form action={logout}>
+            <button type="submit" className="min-h-11 px-2 font-semibold text-slate-600 transition hover:text-white">Sair do evento</button>
+          </form>
+          <RevokeConsentButton eventSlug={event.slug} />
         </footer>
+
         <MobileEventNav eventSlug={event.slug} active="event" />
       </div>
     </AppShell>

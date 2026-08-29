@@ -28,8 +28,8 @@ export function SharePhotoButton() {
   }
 
   return (
-    <button type="button" onClick={share} className="secondary-button flex-1 sm:flex-none">
-      <ShareIcon className="size-4" />
+    <button type="button" onClick={share} className="photo-action w-full">
+      <ShareIcon className="size-5" />
       {copied ? "Link copiado" : "Compartilhar"}
     </button>
   );

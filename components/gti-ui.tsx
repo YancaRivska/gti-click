@@ -174,7 +174,18 @@ export function UsersIcon(props: IconProps) {
   );
 }
 
-export function GtiLogo({ href = "/", compact = false }: { href?: string; compact?: boolean }) {
+export function GtiLogo({
+  href = "/",
+  size = "default",
+}: {
+  href?: string;
+  size?: "compact" | "default" | "hero";
+}) {
+  const sizeClass = {
+    compact: "h-12",
+    default: "h-16",
+    hero: "h-40 sm:h-48",
+  }[size];
   const content = (
     <Image
       src="/assets/gti-click/logo-primary.jpg"
@@ -182,7 +193,7 @@ export function GtiLogo({ href = "/", compact = false }: { href?: string; compac
       width={1229}
       height={1536}
       priority
-      className={`${compact ? "h-11" : "h-14"} w-auto object-contain mix-blend-screen`}
+      className={`${sizeClass} w-auto object-contain mix-blend-screen drop-shadow-[0_0_28px_rgba(168,85,247,.16)]`}
     />
   );
 
@@ -233,31 +244,32 @@ export function EventArtwork({
 }) {
   return (
     <div className={`event-artwork ${compact ? "event-artwork-compact" : ""}`}>
+      <Image
+        src="/assets/gti-click/banner.jpg"
+        alt="GTI CLICK no evento da Galera do TI"
+        fill
+        priority
+        sizes="(max-width: 768px) 100vw, 42rem"
+        className="event-artwork-cover object-cover"
+      />
       <div className="event-artwork-grid" aria-hidden="true" />
-      <div className="event-artwork-orbit" aria-hidden="true">
-        <Image
-          src="/assets/gti-click/mascot-camera.jpg"
-          alt=""
-          fill
-          sizes="(max-width: 640px) 48vw, 22rem"
-          className="object-contain object-bottom mix-blend-screen"
-        />
-      </div>
       <div className="relative z-10 flex h-full flex-col justify-between">
         <div className="flex items-center justify-between">
-          <span className="event-badge">Evento ativo</span>
-          <CameraIcon className="size-5 text-violet-200" />
+          <span className="event-badge">AWS</span>
+          <span className="grid size-10 place-items-center rounded-full border border-white/15 bg-black/25 text-white backdrop-blur-md">
+            <CameraIcon className="size-5" />
+          </span>
         </div>
         <div>
-          <p className="text-xs font-bold tracking-[0.18em] text-fuchsia-200 uppercase">
-            Galera do TI apresenta
+          <p className="mb-3 inline-flex rounded-full bg-violet-600 px-3 py-1.5 text-[0.65rem] font-black tracking-[0.12em] text-white uppercase shadow-[0_8px_24px_rgba(124,58,237,.35)]">
+            03 set · São Paulo
           </p>
-          <h2 className={`${compact ? "mt-2 text-xl" : "mt-3 text-3xl sm:text-4xl"} max-w-[64%] font-black leading-[0.95] tracking-[-0.04em] text-white uppercase`}>
+          <h2 className={`${compact ? "text-2xl" : "text-[2.55rem] sm:text-5xl"} max-w-[92%] font-black leading-[0.88] tracking-[-0.055em] text-white uppercase [text-shadow:0_3px_20px_rgba(0,0,0,.72)]`}>
             {name}
           </h2>
-          <div className="mt-4 flex max-w-[62%] flex-wrap gap-2 text-xs font-semibold text-slate-300">
+          <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold text-white/72">
             <span>{date}</span>
-            <span className="text-violet-400">•</span>
+            <span className="text-violet-300">•</span>
             <span>{location}</span>
           </div>
         </div>
@@ -303,18 +315,18 @@ export function MobileEventNav({
   active: "gallery" | "upload" | "event";
 }) {
   const items = [
-    { key: "gallery", label: "Galeria", href: `/evento/${eventSlug}/galeria`, icon: <ImageIcon className="size-5" /> },
-    { key: "upload", label: "Enviar", href: `/evento/${eventSlug}/enviar`, icon: <CameraIcon className="size-5" /> },
-    { key: "event", label: "Evento", href: `/evento/${eventSlug}`, icon: <ApertureIcon className="size-5" /> },
+    { key: "gallery", label: "Galeria", href: `/evento/${eventSlug}/galeria`, icon: <ImageIcon className="size-5" />, featured: false },
+    { key: "upload", label: "Enviar", href: `/evento/${eventSlug}/enviar`, icon: <CameraIcon className="size-6" />, featured: true },
+    { key: "event", label: "Evento", href: `/evento/${eventSlug}`, icon: <ApertureIcon className="size-5" />, featured: false },
   ] as const;
 
   return (
-    <nav aria-label="Navegação do evento" className="fixed right-4 bottom-4 left-4 z-40 mx-auto grid max-w-sm grid-cols-3 rounded-2xl border border-white/10 bg-[#0a0814]/95 p-1.5 shadow-[0_18px_60px_rgba(0,0,0,.55)] backdrop-blur-xl lg:hidden">
+    <nav aria-label="Navegação do evento" className="mobile-event-nav lg:hidden">
       {items.map((item) => {
         const isActive = active === item.key;
         return (
-          <Link key={item.key} href={item.href} aria-current={isActive ? "page" : undefined} className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl text-[0.65rem] font-bold transition ${isActive ? "bg-violet-500/16 text-violet-200" : "text-slate-600 hover:text-white"}`}>
-            {item.icon}
+          <Link key={item.key} href={item.href} aria-current={isActive ? "page" : undefined} className={`mobile-event-nav-item ${isActive ? "is-active" : ""} ${item.featured ? "is-featured" : ""}`}>
+            <span className="mobile-event-nav-icon">{item.icon}</span>
             {item.label}
           </Link>
         );

@@ -1988,6 +1988,235 @@ label:has(input[type="file"]:not(:disabled)) {
 }
 
 .gallery-grid { align-items: start; }
+
+/* Batch upload ----------------------------------------------------------- */
+
+.batch-add-button {
+  display: inline-flex;
+  min-height: 2.5rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(196 181 253 / 18%);
+  border-radius: 999px;
+  padding: 0.55rem 0.85rem;
+  color: #ddd6fe;
+  background: rgb(139 92 246 / 8%);
+  font-size: 0.68rem;
+  font-weight: 800;
+  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+.batch-add-button:hover {
+  border-color: rgb(216 180 254 / 34%);
+  background: rgb(139 92 246 / 14%);
+  transform: translateY(-1px);
+}
+
+.batch-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.batch-photo-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 8%);
+  border-radius: 1rem;
+  background: linear-gradient(155deg, rgb(255 255 255 / 4%), rgb(8 7 15 / 90%));
+  box-shadow: 0 12px 28px rgb(0 0 0 / 20%);
+  transition: border-color 180ms ease, transform 180ms ease, opacity 180ms ease;
+}
+
+.batch-photo-card.is-preparing,
+.batch-photo-card.is-uploading {
+  border-color: rgb(168 85 247 / 38%);
+}
+
+.batch-photo-card.is-done {
+  border-color: rgb(52 211 153 / 22%);
+}
+
+.batch-photo-card.is-error {
+  border-color: rgb(251 113 133 / 24%);
+}
+
+.batch-photo-preview {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: #080711;
+}
+
+.batch-photo-preview::after {
+  position: absolute;
+  inset: auto 0 0;
+  height: 35%;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgb(3 3 8 / 48%));
+  content: "";
+}
+
+.batch-heic-placeholder {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  color: #c4b5fd;
+  background:
+    radial-gradient(circle at 50% 42%, rgb(168 85 247 / 18%), transparent 46%),
+    linear-gradient(145deg, #0e0b19, #070710);
+  font-size: 0.62rem;
+  font-weight: 750;
+}
+
+.batch-remove-button {
+  position: absolute;
+  z-index: 2;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 999px;
+  color: white;
+  background: rgb(2 2 7 / 72%);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 30%);
+  font-size: 1rem;
+  line-height: 1;
+  backdrop-filter: blur(10px);
+  transition: background 180ms ease, transform 180ms ease;
+}
+
+.batch-remove-button:hover {
+  background: rgb(136 19 55 / 72%);
+  transform: scale(1.04);
+}
+
+.batch-photo-status {
+  display: flex;
+  min-height: 2.65rem;
+  align-items: center;
+  gap: 0.48rem;
+  padding: 0.65rem 0.72rem;
+  color: #b9b2c7;
+  font-size: 0.64rem;
+  font-weight: 750;
+}
+
+.batch-status-dot {
+  width: 0.42rem;
+  height: 0.42rem;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #8b5cf6;
+  box-shadow: 0 0 9px rgb(139 92 246 / 60%);
+}
+
+.is-preparing .batch-status-dot,
+.is-uploading .batch-status-dot {
+  animation: batch-status-pulse 1.2s ease-in-out infinite;
+  background: #d946ef;
+}
+
+.is-done .batch-status-dot {
+  background: #34d399;
+  box-shadow: 0 0 9px rgb(52 211 153 / 55%);
+}
+
+.is-error .batch-status-dot {
+  background: #fb7185;
+  box-shadow: 0 0 9px rgb(251 113 133 / 48%);
+}
+
+.batch-photo-error {
+  min-height: 3.2rem;
+  border-top: 1px solid rgb(251 113 133 / 9%);
+  padding: 0.65rem 0.72rem 0.75rem;
+  color: rgb(254 205 211 / 72%);
+  font-size: 0.6rem;
+  line-height: 1.45;
+}
+
+.batch-progress,
+.batch-result {
+  border: 1px solid rgb(196 181 253 / 14%);
+  border-radius: 1.15rem;
+  padding: 1rem;
+  background:
+    radial-gradient(circle at 90% 20%, rgb(168 85 247 / 10%), transparent 44%),
+    rgb(255 255 255 / 3%);
+}
+
+.batch-progress-track {
+  height: 0.42rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 6%);
+}
+
+.batch-progress-value {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #7c3aed, #d946ef);
+  box-shadow: 0 0 16px rgb(168 85 247 / 40%);
+  transition: width 280ms ease;
+}
+
+.batch-result {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.batch-result.is-success {
+  border-color: rgb(52 211 153 / 16%);
+  background: linear-gradient(145deg, rgb(16 185 129 / 7%), rgb(139 92 246 / 5%));
+}
+
+.batch-result.has-errors {
+  border-color: rgb(251 113 133 / 15%);
+  background: linear-gradient(145deg, rgb(190 24 93 / 6%), rgb(139 92 246 / 4%));
+}
+
+.batch-result-icon {
+  display: grid;
+  width: 2.65rem;
+  height: 2.65rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 0.85rem;
+  color: #a7f3d0;
+  background: rgb(52 211 153 / 9%);
+}
+
+.has-errors .batch-result-icon {
+  color: #fecdd3;
+  background: rgb(251 113 133 / 8%);
+}
+
+@keyframes batch-status-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.12); }
+}
+
+@media (max-width: 340px) {
+  .batch-photo-grid { gap: 0.5rem; }
+  .batch-photo-status { padding-inline: 0.55rem; font-size: 0.58rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-preparing .batch-status-dot,
+  .is-uploading .batch-status-dot {
+    animation: none;
+  }
+}
 .gallery-card { overflow: hidden; }
 .gallery-card-media { display: block; overflow: hidden; border-radius: 0.78rem; }
 .gallery-card-body { min-height: 2.8rem; }

@@ -15,9 +15,7 @@ export default function GalleryLoading() {
             <div key={index} className="gallery-card">
               <div className="skeleton aspect-[4/5]" />
               <div className="gallery-card-body">
-                <div className="flex items-center gap-2"><span className="skeleton size-6 rounded-full" /><span className="skeleton h-2.5 w-16 rounded-full" /></div>
-                <div className="skeleton mt-3 h-8 rounded-lg" />
-                <div className="mt-3 flex gap-1.5"><span className="skeleton h-9 flex-1 rounded-lg" /><span className="skeleton h-9 flex-1 rounded-lg" /></div>
+                <div className="flex gap-1.5"><span className="skeleton h-10 flex-1 rounded-lg" /><span className="skeleton h-10 flex-1 rounded-lg" /></div>
               </div>
             </div>
           ))}

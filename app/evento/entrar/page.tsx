@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getEventByCode } from "@/data/events";
@@ -12,7 +11,6 @@ import {
   CameraIcon,
   GtiLogo,
   LockIcon,
-  SparklesIcon,
 } from "@/components/gti-ui";
 import { enterAdmin } from "./actions";
 
@@ -73,29 +71,15 @@ export default function EventEntryPage() {
           <GtiLogo size="compact" />
         </header>
 
-        <main className="flex flex-1 flex-col py-4">
-          <section className="entry-visual fade-up">
-            <div className="entry-visual-copy">
-              <span className="entry-context"><SparklesIcon className="size-3.5" />Álbum exclusivo</span>
-              <h1 className="mt-3 text-[2.45rem] leading-[0.92] font-black tracking-[-0.06em] text-white">
-                Entre no <span className="text-gradient">evento.</span>
-              </h1>
-              <p className="mt-2 max-w-[13rem] text-sm leading-relaxed text-slate-400">
-                Digite o código e entra com a galera.
-              </p>
-            </div>
-            <div className="entry-visual-glow" aria-hidden="true" />
-            <div className="entry-mascot mascot-float">
-              <Image
-                src="/assets/gti-click/mascot-phone-seated.jpg"
-                alt="Mascote GTI CLICK pronto para entrar no evento"
-                fill
-                priority
-                sizes="11rem"
-                className="object-contain object-bottom mix-blend-screen"
-              />
-            </div>
-            <span className="entry-camera-bubble" aria-hidden="true"><CameraIcon className="size-4" /></span>
+        <main className="flex flex-1 flex-col justify-center py-5">
+          <section className="entry-heading fade-up text-center">
+            <span className="entry-context"><CameraIcon className="size-3.5" />Álbum exclusivo</span>
+            <h1 className="mt-4 text-[2.7rem] leading-[0.92] font-black tracking-[-0.06em] text-white">
+              Entre no evento
+            </h1>
+            <p className="mx-auto mt-3 max-w-[17rem] text-sm leading-relaxed text-slate-400">
+              Digite o código e entra com a galera.
+            </p>
           </section>
 
           <section className="access-card fade-up">
@@ -157,7 +141,7 @@ export default function EventEntryPage() {
             </div>
           </section>
 
-          <p className="mt-auto pt-5 text-center text-xs leading-relaxed text-slate-600">
+          <p className="pt-6 text-center text-xs leading-relaxed text-slate-600">
             Os melhores momentos da galera, em um só lugar.
           </p>
         </main>

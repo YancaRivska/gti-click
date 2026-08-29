@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import {
   AppShell,
-  BackLink,
+  ArrowLeftIcon,
   CameraIcon,
   CheckIcon,
   ImageIcon,
@@ -190,8 +190,11 @@ export function PhotoUploadForm({
     <AppShell>
       <div className="mx-auto min-h-svh w-full max-w-xl px-4 pb-28 pt-5 sm:px-7 lg:pb-10">
         <header className="flex items-center justify-between">
-          <BackLink href={`/evento/${eventSlug}`}>Voltar</BackLink>
-          <span className="max-w-40 truncate text-[0.62rem] font-black tracking-[0.1em] text-violet-300 uppercase">{eventName}</span>
+          <Link href={`/evento/${eventSlug}`} aria-label="Voltar ao evento" className="icon-button rounded-full"><ArrowLeftIcon className="size-5" /></Link>
+          <div className="text-right">
+            <p className="text-sm font-black text-white">Enviar foto</p>
+            <p className="mt-0.5 max-w-40 truncate text-[0.58rem] text-slate-600">{eventName}</p>
+          </div>
         </header>
 
           <section className="pt-5">

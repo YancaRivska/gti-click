@@ -111,14 +111,15 @@ export default async function GalleryPage({
                 className="aspect-[4/5] w-full object-cover"
               />
               <span className="gallery-date">{dateFormatter.format(new Date(photo.created_at))}</span>
+              {(photo.instagram_handle || photo.caption) && (
+                <div className="gallery-card-overlay">
+                  {photo.instagram_handle && <p className="truncate text-[0.68rem] font-black text-white">{photo.instagram_handle}</p>}
+                  {photo.caption && <p className="mt-0.5 line-clamp-1 text-[0.58rem] text-white/65">{photo.caption}</p>}
+                </div>
+              )}
             </Link>
             <div className="gallery-card-body">
-              <div className="flex min-w-0 items-center gap-2">
-                <span className="gallery-avatar">{(photo.instagram_handle?.replace("@", "").charAt(0) || "G").toUpperCase()}</span>
-                <p className="min-w-0 flex-1 truncate text-[0.72rem] font-black text-white">{photo.instagram_handle || "Equipe GTI"}</p>
-              </div>
-              <p className={`mt-2 line-clamp-2 min-h-[2.25rem] text-[0.66rem] leading-[1.15rem] ${photo.caption ? "text-slate-400" : "italic text-slate-600"}`}>{photo.caption || "Um click da galera."}</p>
-              <div className="mt-3 flex gap-1.5 border-t border-white/6 pt-2.5">
+              <div className="flex gap-1.5">
                 {photo.downloadUrl ? (
                   <a href={photo.downloadUrl} download className="gallery-card-action" aria-label="Baixar foto">
                     <DownloadIcon className="size-3.5" /><span>Baixar</span>

@@ -256,9 +256,6 @@ export function EventArtwork({
       />
       <div className="event-cover-shade" aria-hidden="true" />
       <div className="event-artwork-grid" aria-hidden="true" />
-      <div className="event-cover-top">
-        <span className="event-cover-camera"><CameraIcon className="size-4" /></span>
-      </div>
       <div className="event-cover-copy">
         <span className="event-badge mb-3">AWS</span>
         <h1 className={`${compact ? "text-2xl" : "text-[2.35rem] sm:text-[2.8rem]"} max-w-[19rem] font-black leading-[0.9] tracking-[-0.055em] text-white uppercase`}>

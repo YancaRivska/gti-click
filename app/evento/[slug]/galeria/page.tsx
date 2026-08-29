@@ -11,6 +11,7 @@ import {
   MobileEventNav,
   ShieldIcon,
 } from "@/components/gti-ui";
+import { hasAdminSession } from "@/lib/admin-auth";
 import { requireEventAccess } from "@/lib/event-access";
 import { DeleteOwnPhotoButton } from "./[photoId]/delete-own-photo-button";
 
@@ -23,11 +24,12 @@ export default async function GalleryPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ deleted?: string | string[] }>;
+  searchParams: Promise<{ deleted?: string | string[]; error?: string | string[] }>;
 }) {
   const { slug } = await params;
   const { event, supabase, user } = await requireEventAccess(slug);
   const query = await searchParams;
+  const adminSession = await hasAdminSession();
 
   let { data: photos, error: photosError } = await supabase
     .from("photo_uploads")
@@ -109,6 +111,9 @@ export default async function GalleryPage({
       {query.deleted === "1" && (
         <p role="status" className="mb-4 rounded-xl border border-emerald-300/10 bg-emerald-400/[0.055] px-3 py-2.5 text-xs text-emerald-100/85">Foto excluída com sucesso.</p>
       )}
+      {query.error === "delete" && (
+        <p role="alert" className="mb-4 rounded-xl border border-red-300/10 bg-red-400/[0.05] px-3 py-2.5 text-xs text-red-200/85">Não foi possível excluir. Confira o código administrativo e tente novamente.</p>
+      )}
 
       <div className="gallery-grid">
         {visiblePhotos.map((photo) => (
@@ -142,7 +147,12 @@ export default async function GalleryPage({
                     <DownloadIcon className="size-3.5" /><span>Abrir</span>
                   </Link>
                 )}
-                {photo.user_id === user.id && <DeleteOwnPhotoButton eventSlug={event.slug} photoId={photo.id} variant="card" />}
+                <DeleteOwnPhotoButton
+                  eventSlug={event.slug}
+                  photoId={photo.id}
+                  variant="card"
+                  requiresAdminCode={photo.user_id !== user.id && !adminSession}
+                />
               </div>
             </div>
           </article>

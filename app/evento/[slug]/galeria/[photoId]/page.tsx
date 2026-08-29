@@ -5,10 +5,10 @@ import {
   AppShell,
   ArrowLeftIcon,
   DownloadIcon,
-  FlagIcon,
   MobileEventNav,
   ShieldIcon,
 } from "@/components/gti-ui";
+import { hasAdminSession } from "@/lib/admin-auth";
 import { requireEventAccess } from "@/lib/event-access";
 import { DeleteOwnPhotoButton } from "./delete-own-photo-button";
 import { SharePhotoButton } from "./share-photo-button";
@@ -26,6 +26,7 @@ export default async function PhotoDetailPage({
 }) {
   const { slug, photoId } = await params;
   const { event, supabase, user } = await requireEventAccess(slug);
+  const adminSession = await hasAdminSession();
 
   let { data: photo, error: photoError } = await supabase
     .from("photo_uploads")
@@ -110,11 +111,11 @@ export default async function PhotoDetailPage({
           <div className="media-action-bar">
             <a href={downloadResult.data.signedUrl} download className="media-action media-action-primary"><DownloadIcon className="size-5" />Baixar</a>
             <SharePhotoButton />
-            {photo.user_id === user.id ? (
-              <DeleteOwnPhotoButton eventSlug={event.slug} photoId={photo.id} />
-            ) : (
-              <a href={`mailto:administracao@galeradoti.com?subject=${reportSubject}&body=${reportBody}`} className="media-action media-action-secondary"><FlagIcon className="size-5" />Reportar</a>
-            )}
+            <DeleteOwnPhotoButton
+              eventSlug={event.slug}
+              photoId={photo.id}
+              requiresAdminCode={photo.user_id !== user.id && !adminSession}
+            />
           </div>
 
           {photo.caption ? <p className="py-5 text-sm leading-relaxed text-slate-300"><span className="mr-2 font-black text-white">{photo.instagram_handle || "GTI CLICK"}</span>{photo.caption}</p> : <p className="py-5 text-sm italic text-slate-600">Esse click fala por si só.</p>}
@@ -122,6 +123,8 @@ export default async function PhotoDetailPage({
           <div className="flex items-start gap-2 rounded-xl bg-violet-500/[0.045] px-3 py-2.5 text-[0.65rem] leading-relaxed text-slate-600">
             <ShieldIcon className="mt-0.5 size-3.5 shrink-0 text-violet-300" />O download usa um link temporário. A foto continua privada.
           </div>
+
+          <a href={`mailto:administracao@galeradoti.com?subject=${reportSubject}&body=${reportBody}`} className="mt-3 block min-h-11 py-3 text-center text-xs font-bold text-slate-600 transition hover:text-white">Reportar esta foto</a>
 
         </section>
 

@@ -74,7 +74,7 @@ export async function createAdminSession(inputCode: string) {
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
     maxAge: ADMIN_SESSION_DURATION_SECONDS,
-    path: "/admin",
+    path: "/",
   });
 
   return true;
@@ -111,6 +111,13 @@ export async function hasAdminSession() {
 
 export async function clearAdminSession() {
   const cookieStore = await cookies();
+  cookieStore.set(ADMIN_COOKIE, "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 0,
+    path: "/",
+  });
   cookieStore.set(ADMIN_COOKIE, "", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

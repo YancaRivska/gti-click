@@ -20,10 +20,12 @@ export function DeleteOwnPhotoButton({
   eventSlug,
   photoId,
   variant = "detail",
+  requiresAdminCode = false,
 }: {
   eventSlug: string;
   photoId: string;
   variant?: "detail" | "card";
+  requiresAdminCode?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
@@ -74,12 +76,32 @@ export function DeleteOwnPhotoButton({
           >
             <span className="confirm-dialog-icon"><TrashIcon className="size-6" /></span>
             <h2 id={`delete-title-${photoId}`} className="mt-4 text-xl font-black text-white">Excluir esta foto?</h2>
-            <p className="mt-2 text-sm leading-relaxed text-slate-400">Essa ação não poderá ser desfeita.</p>
+            <p className="mt-2 text-sm leading-relaxed text-slate-400">
+              {requiresAdminCode
+                ? "Essa foto pertence a outra sessão. Use o código administrativo para excluí-la."
+                : "Essa ação não poderá ser desfeita."}
+            </p>
+            {requiresAdminCode && (
+              <div className="mt-5">
+                <label htmlFor={`admin-code-${photoId}`} className="text-xs font-bold text-slate-300">Código administrativo</label>
+                <input
+                  id={`admin-code-${photoId}`}
+                  name="adminCode"
+                  type="password"
+                  required
+                  autoComplete="off"
+                  form={`delete-form-${photoId}`}
+                  className="field mt-2 min-h-12 px-4"
+                  placeholder="Digite o código"
+                />
+              </div>
+            )}
             <div className="mt-6 grid grid-cols-2 gap-2.5">
               <button ref={cancelButtonRef} type="button" onClick={() => setIsOpen(false)} className="confirm-cancel-button">Cancelar</button>
-              <form action={deleteOwnPhoto}>
+              <form id={`delete-form-${photoId}`} action={deleteOwnPhoto}>
                 <input type="hidden" name="eventSlug" value={eventSlug} />
                 <input type="hidden" name="photoId" value={photoId} />
+                <input type="hidden" name="source" value={variant} />
                 <ConfirmDeleteButton />
               </form>
             </div>

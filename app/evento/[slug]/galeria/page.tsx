@@ -5,19 +5,18 @@ import {
   AppShell,
   ArrowLeftIcon,
   CameraIcon,
-  DownloadIcon,
   EmptyState,
   ImageIcon,
   MobileEventNav,
   ShieldIcon,
 } from "@/components/gti-ui";
+import { WatermarkedDownloadButton } from "@/components/watermarked-download-button";
 import { hasAdminSession } from "@/lib/admin-auth";
 import { requireEventAccess } from "@/lib/event-access";
 import { DeleteOwnPhotoButton } from "./[photoId]/delete-own-photo-button";
 
 const BUCKET = "event-photos";
 const SIGNED_URL_DURATION = 60 * 10;
-const DOWNLOAD_URL_DURATION = 60 * 5;
 
 export default async function GalleryPage({
   params,
@@ -72,10 +71,9 @@ export default async function GalleryPage({
   }
 
   const paths = photos.map((photo) => photo.storage_path);
-  const [signedResult, downloadResult] = await Promise.all([
-    supabase.storage.from(BUCKET).createSignedUrls(paths, SIGNED_URL_DURATION),
-    supabase.storage.from(BUCKET).createSignedUrls(paths, DOWNLOAD_URL_DURATION, { download: true }),
-  ]);
+  const signedResult = await supabase.storage
+    .from(BUCKET)
+    .createSignedUrls(paths, SIGNED_URL_DURATION);
 
   if (signedResult.error) {
     return (
@@ -86,10 +84,9 @@ export default async function GalleryPage({
   }
 
   const signedUrls = new Map(signedResult.data.map((photo) => [photo.path, photo.signedUrl]));
-  const downloadUrls = new Map(downloadResult.data?.map((photo) => [photo.path, photo.signedUrl]) ?? []);
   const visiblePhotos = photos.flatMap((photo) => {
     const signedUrl = signedUrls.get(photo.storage_path);
-    return signedUrl ? [{ ...photo, signedUrl, downloadUrl: downloadUrls.get(photo.storage_path) }] : [];
+    return signedUrl ? [{ ...photo, signedUrl }] : [];
   });
 
   if (!visiblePhotos.length) {
@@ -138,15 +135,11 @@ export default async function GalleryPage({
             </Link>
             <div className="gallery-card-body">
               <div className="flex gap-1.5">
-                {photo.downloadUrl ? (
-                  <a href={photo.downloadUrl} download className="gallery-card-action is-download" aria-label="Baixar foto">
-                    <DownloadIcon className="size-3.5" /><span>Baixar</span>
-                  </a>
-                ) : (
-                  <Link href={`/evento/${event.slug}/galeria/${photo.id}`} className="gallery-card-action is-download" aria-label="Abrir foto para baixar">
-                    <DownloadIcon className="size-3.5" /><span>Abrir</span>
-                  </Link>
-                )}
+                <WatermarkedDownloadButton
+                  eventSlug={event.slug}
+                  photoId={photo.id}
+                  variant="card"
+                />
                 <DeleteOwnPhotoButton
                   eventSlug={event.slug}
                   photoId={photo.id}

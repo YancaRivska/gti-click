@@ -2386,3 +2386,102 @@ label:has(input[type="file"]:not(:disabled)) {
   .gallery-event-banner-controls { padding: 0.55rem; }
   .gallery-event-banner-caption { bottom: 0.45rem; }
 }
+
+.watermarked-download {
+  min-width: 0;
+}
+
+.watermarked-download.is-card {
+  display: flex;
+  flex: 1 1 0;
+}
+
+.watermarked-download.is-card .gallery-card-action,
+.watermarked-download.is-detail,
+.watermarked-download.is-detail .media-action {
+  width: 100%;
+}
+
+.is-watermarked {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.is-watermarked::after {
+  position: absolute;
+  z-index: -1;
+  inset: auto -25% -180% 25%;
+  height: 220%;
+  border-radius: 999px;
+  background: rgb(59 130 246 / 18%);
+  filter: blur(14px);
+  content: "";
+  pointer-events: none;
+}
+
+.is-watermarked:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  transform: none;
+}
+
+.download-spinner {
+  flex: 0 0 auto;
+  border: 2px solid rgb(219 234 254 / 24%);
+  border-top-color: #dbeafe;
+  border-radius: 999px;
+  animation: download-spin 750ms linear infinite;
+}
+
+.download-toast {
+  position: fixed;
+  z-index: 70;
+  right: 1rem;
+  bottom: calc(max(6.75rem, env(safe-area-inset-bottom) + 5.8rem));
+  left: 1rem;
+  width: min(calc(100% - 2rem), 24rem);
+  margin: 0 auto;
+  border: 1px solid rgb(147 197 253 / 20%);
+  border-radius: 1rem;
+  padding: 0.8rem 1rem;
+  color: #dbeafe;
+  background: rgb(8 13 27 / 94%);
+  box-shadow: 0 18px 46px rgb(0 0 0 / 48%), 0 0 28px rgb(37 99 235 / 12%);
+  font-size: 0.72rem;
+  font-weight: 750;
+  line-height: 1.4;
+  text-align: center;
+  backdrop-filter: blur(18px);
+  animation: download-toast-in 180ms ease-out both;
+}
+
+.download-toast.is-success {
+  border-color: rgb(52 211 153 / 20%);
+  color: #d1fae5;
+  background: rgb(5 24 19 / 94%);
+}
+
+.download-toast.is-error {
+  border-color: rgb(251 113 133 / 22%);
+  color: #ffe4e6;
+  background: rgb(34 9 18 / 95%);
+}
+
+@keyframes download-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes download-toast-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (min-width: 1024px) {
+  .download-toast { bottom: 2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .download-spinner { animation-duration: 1.5s; }
+  .download-toast { animation: none; }
+}

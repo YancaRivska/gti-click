@@ -4,10 +4,10 @@ import { notFound } from "next/navigation";
 import {
   AppShell,
   ArrowLeftIcon,
-  DownloadIcon,
   MobileEventNav,
   ShieldIcon,
 } from "@/components/gti-ui";
+import { WatermarkedDownloadButton } from "@/components/watermarked-download-button";
 import { hasAdminSession } from "@/lib/admin-auth";
 import { requireEventAccess } from "@/lib/event-access";
 import { DeleteOwnPhotoButton } from "./delete-own-photo-button";
@@ -15,7 +15,6 @@ import { SharePhotoButton } from "./share-photo-button";
 
 const BUCKET = "event-photos";
 const SIGNED_URL_DURATION = 60 * 10;
-const DOWNLOAD_URL_DURATION = 60 * 5;
 
 export default async function PhotoDetailPage({
   params,
@@ -52,16 +51,12 @@ export default async function PhotoDetailPage({
     notFound();
   }
 
-  const extension = photo.storage_path.split(".").pop()?.toLowerCase();
-  const safeExtension = ["jpg", "png", "webp"].includes(extension ?? "") ? extension : "jpg";
-  const downloadName = `gti-click-${photo.id}.${safeExtension}`;
-  const [signedResult, downloadResult, relatedResult] = await Promise.all([
+  const [signedResult, relatedResult] = await Promise.all([
     supabase.storage.from(BUCKET).createSignedUrl(photo.storage_path, SIGNED_URL_DURATION),
-    supabase.storage.from(BUCKET).createSignedUrl(photo.storage_path, DOWNLOAD_URL_DURATION, { download: downloadName }),
     supabase.from("photo_uploads").select("id, storage_path, caption").eq("event_id", event.id).neq("moderation_status", "rejected").neq("id", photo.id).order("created_at", { ascending: false }).limit(5),
   ]);
 
-  if (signedResult.error || downloadResult.error) {
+  if (signedResult.error) {
     notFound();
   }
 
@@ -109,7 +104,7 @@ export default async function PhotoDetailPage({
 
         <section className="px-4 pt-4 sm:px-7">
           <div className="media-action-bar">
-            <a href={downloadResult.data.signedUrl} download className="media-action media-action-primary"><DownloadIcon className="size-5" />Baixar</a>
+            <WatermarkedDownloadButton eventSlug={event.slug} photoId={photo.id} />
             <SharePhotoButton />
             <DeleteOwnPhotoButton
               eventSlug={event.slug}
@@ -121,7 +116,7 @@ export default async function PhotoDetailPage({
           {photo.caption ? <p className="py-5 text-sm leading-relaxed text-slate-300"><span className="mr-2 font-black text-white">{photo.instagram_handle || "GTI CLICK"}</span>{photo.caption}</p> : <p className="py-5 text-sm italic text-slate-600">Esse click fala por si só.</p>}
 
           <div className="flex items-start gap-2 rounded-xl bg-violet-500/[0.045] px-3 py-2.5 text-[0.65rem] leading-relaxed text-slate-600">
-            <ShieldIcon className="mt-0.5 size-3.5 shrink-0 text-violet-300" />O download usa um link temporário. A foto continua privada.
+            <ShieldIcon className="mt-0.5 size-3.5 shrink-0 text-violet-300" />O download gera uma cópia com a marca do evento. A foto original continua privada e sem alterações.
           </div>
 
           <a href={`mailto:administracao@galeradoti.com?subject=${reportSubject}&body=${reportBody}`} className="mt-3 block min-h-11 py-3 text-center text-xs font-bold text-slate-600 transition hover:text-white">Reportar esta foto</a>

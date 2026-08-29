@@ -1,6 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
-import { AppShell, ArrowLeftIcon, GtiLogo } from "@/components/gti-ui";
+import { ApertureIcon, AppShell, ArrowLeftIcon, GtiLogo } from "@/components/gti-ui";
 
 export default function NotFound() {
   return (
@@ -8,16 +7,8 @@ export default function NotFound() {
       <div className="mx-auto flex min-h-svh w-full max-w-2xl flex-col px-5 py-6 sm:px-8">
         <GtiLogo />
         <section className="flex flex-1 flex-col items-center justify-center py-12 text-center">
-          <div className="relative h-52 w-52 sm:h-64 sm:w-64">
-            <Image
-              src="/assets/gti-click/error-camera.jpg"
-              alt="Câmera GTI CLICK com alerta"
-              fill
-              sizes="16rem"
-              className="object-contain mix-blend-screen"
-            />
-          </div>
-          <p className="eyebrow mt-2"><span className="eyebrow-dot" />Erro 404</p>
+          <span className="grid size-16 place-items-center rounded-full border border-violet-300/15 bg-violet-500/8 text-violet-300"><ApertureIcon className="size-8" /></span>
+          <p className="eyebrow mt-5"><span className="eyebrow-dot" />Erro 404</p>
           <h1 className="mt-5 text-4xl font-black tracking-[-0.05em] text-white sm:text-6xl">
             Esse click não existe por aqui.
           </h1>

@@ -181,21 +181,11 @@ export function GtiLogo({
   href?: string;
   size?: "compact" | "default" | "hero";
 }) {
-  const sizeClass = {
-    compact: "h-[3.4rem] w-[5.8rem]",
-    default: "h-[4.6rem] w-[7.8rem]",
-    hero: "h-[7.5rem] w-[12.8rem] sm:h-[8.5rem] sm:w-[14.5rem]",
-  }[size];
+  const sizeClass = `brand-wordmark-${size}`;
   const content = (
-    <span className={`gti-logo relative block shrink-0 overflow-hidden ${sizeClass}`}>
-      <Image
-        src="/assets/gti-click/logo-primary.jpg"
-        alt="GTI CLICK"
-        fill
-        priority
-        sizes={size === "hero" ? "15rem" : "8rem"}
-        className="object-cover object-[center_31%] mix-blend-screen"
-      />
+    <span className={`brand-wordmark ${sizeClass}`} aria-label="GTI CLICK">
+      <span className="brand-wordmark-top">GTI<ApertureIcon /></span>
+      <span className="brand-wordmark-bottom">CLICK</span>
     </span>
   );
 
@@ -247,18 +237,17 @@ export function EventArtwork({
   return (
     <div className={`event-artwork ${compact ? "event-artwork-compact" : ""}`}>
       <Image
-        src="/assets/gti-click/banner.jpg"
-        alt="GTI CLICK — registros da galera em eventos"
+        src="/assets/gti-click/event-cover-reference.jpg"
+        alt="Ponte Estaiada em São Paulo ao entardecer"
         fill
         priority
         sizes="(max-width: 768px) 100vw, 36rem"
         className="event-cover-image object-cover"
       />
       <div className="event-cover-shade" aria-hidden="true" />
-      <div className="event-artwork-grid" aria-hidden="true" />
       <div className="event-cover-copy">
         <span className="event-badge mb-3">AWS</span>
-        <h1 className={`${compact ? "text-2xl" : "text-[2.35rem] sm:text-[2.8rem]"} max-w-[19rem] font-black leading-[0.9] tracking-[-0.055em] text-white uppercase`}>
+        <h1 className={`${compact ? "text-2xl" : "text-[1.9rem] sm:text-[2.35rem]"} max-w-[18rem] font-black leading-[0.92] tracking-[-0.045em] text-white uppercase`}>
           {name}
         </h1>
         <p className="event-date-badge">03 set <span>•</span> São Paulo</p>

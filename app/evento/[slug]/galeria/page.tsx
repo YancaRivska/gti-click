@@ -29,7 +29,7 @@ export default async function GalleryPage({
   const { event, supabase, user } = await requireEventAccess(slug);
   const query = await searchParams;
 
-  const { data: photos, error: photosError } = await supabase
+  let { data: photos, error: photosError } = await supabase
     .from("photo_uploads")
     .select("id, user_id, storage_path, caption, instagram_handle, created_at")
     .eq("event_id", event.id)
@@ -37,9 +37,22 @@ export default async function GalleryPage({
     .order("created_at", { ascending: false });
 
   if (photosError) {
+    const fallback = await supabase
+      .from("photo_uploads")
+      .select("id, user_id, storage_path, caption, instagram_handle, created_at")
+      .eq("event_id", event.id)
+      .order("created_at", { ascending: false });
+
+    photos = fallback.data;
+    photosError = fallback.error;
+  }
+
+  photos ??= [];
+
+  if (photosError) {
     return (
       <GalleryShell eventSlug={event.slug}>
-        <EmptyState icon={<ImageIcon className="size-6" />} visual={<Image src="/assets/gti-click/error-camera.jpg" alt="Câmera GTI CLICK com alerta" fill sizes="10rem" className="object-contain mix-blend-screen" />} title="Não conseguimos carregar a galeria" description="Tente novamente em alguns instantes. Seus clicks continuam protegidos.">
+        <EmptyState icon={<ImageIcon className="size-6" />} title="Não conseguimos carregar a galeria" description="Tente novamente em alguns instantes. Seus clicks continuam protegidos.">
           <Link href={`/evento/${event.slug}`} className="secondary-button mt-6">Voltar ao evento</Link>
         </EmptyState>
       </GalleryShell>
@@ -49,7 +62,7 @@ export default async function GalleryPage({
   if (!photos.length) {
     return (
       <GalleryShell eventSlug={event.slug} photoCount={0}>
-        <EmptyState icon={<CameraIcon className="size-6" />} visual={<Image src="/assets/gti-click/mascot-camera.jpg" alt="Mascote GTI CLICK com câmera" fill sizes="10rem" className="object-contain mix-blend-screen" />} title="Nenhum click por aqui ainda" description="Seja o primeiro a registrar esse momento.">
+        <EmptyState icon={<CameraIcon className="size-6" />} title="Nenhum click por aqui ainda" description="Seja o primeiro a registrar esse momento.">
           <Link href={`/evento/${event.slug}/enviar`} className="gradient-button mt-6">Enviar uma foto</Link>
         </EmptyState>
       </GalleryShell>
@@ -65,7 +78,7 @@ export default async function GalleryPage({
   if (signedResult.error) {
     return (
       <GalleryShell eventSlug={event.slug}>
-        <EmptyState icon={<ShieldIcon className="size-6" />} visual={<Image src="/assets/gti-click/error-camera.jpg" alt="Câmera GTI CLICK com alerta" fill sizes="10rem" className="object-contain mix-blend-screen" />} title="Não conseguimos carregar a galeria" description="Os links privados não ficaram disponíveis agora. Tente novamente daqui a pouco." />
+        <EmptyState icon={<ShieldIcon className="size-6" />} title="Não conseguimos carregar a galeria" description="Os links privados não ficaram disponíveis agora. Tente novamente daqui a pouco." />
       </GalleryShell>
     );
   }
@@ -80,7 +93,7 @@ export default async function GalleryPage({
   if (!visiblePhotos.length) {
     return (
       <GalleryShell eventSlug={event.slug}>
-        <EmptyState icon={<ImageIcon className="size-6" />} visual={<Image src="/assets/gti-click/error-camera.jpg" alt="Câmera GTI CLICK com alerta" fill sizes="10rem" className="object-contain mix-blend-screen" />} title="Fotos indisponíveis agora" description="Tente novamente em alguns instantes." />
+        <EmptyState icon={<ImageIcon className="size-6" />} title="Fotos indisponíveis agora" description="Tente novamente em alguns instantes." />
       </GalleryShell>
     );
   }
@@ -168,9 +181,6 @@ function GalleryShell({
 
         {children}
 
-        <Link href={`/evento/${eventSlug}/enviar`} aria-label="Enviar foto" className="gradient-button fixed right-5 bottom-24 z-30 size-14 rounded-full p-0 shadow-[0_14px_40px_rgba(124,58,237,.5)] sm:right-8 lg:hidden">
-          <CameraIcon className="size-6" />
-        </Link>
         <MobileEventNav eventSlug={eventSlug} active="gallery" />
       </div>
     </AppShell>

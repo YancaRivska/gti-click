@@ -27,7 +27,7 @@ export default async function PhotoDetailPage({
   const { slug, photoId } = await params;
   const { event, supabase, user } = await requireEventAccess(slug);
 
-  const { data: photo } = await supabase
+  let { data: photo, error: photoError } = await supabase
     .from("photo_uploads")
     .select("id, user_id, storage_path, caption, instagram_handle, created_at")
     .eq("id", photoId)
@@ -35,7 +35,19 @@ export default async function PhotoDetailPage({
     .neq("moderation_status", "rejected")
     .maybeSingle();
 
-  if (!photo) {
+  if (photoError) {
+    const fallback = await supabase
+      .from("photo_uploads")
+      .select("id, user_id, storage_path, caption, instagram_handle, created_at")
+      .eq("id", photoId)
+      .eq("event_id", event.id)
+      .maybeSingle();
+
+    photo = fallback.data;
+    photoError = fallback.error;
+  }
+
+  if (photoError || !photo) {
     notFound();
   }
 

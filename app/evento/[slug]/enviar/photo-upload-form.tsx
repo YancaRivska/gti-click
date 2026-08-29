@@ -211,9 +211,7 @@ export function PhotoUploadForm({
             </div>
           ) : (
             <label className="upload-zone mt-6">
-              <div className="relative h-32 w-32 sm:h-40 sm:w-40">
-                <Image src="/assets/gti-click/upload-cloud.jpg" alt="Nuvem GTI CLICK para envio de fotos" fill sizes="10rem" className="object-contain mix-blend-screen drop-shadow-[0_0_25px_rgba(168,85,247,.2)]" />
-              </div>
+              <span className="upload-reference-icon"><UploadIcon className="size-11" /></span>
               <p className="mt-2 text-base font-black text-white">Toque para escolher uma foto</p>
               <p className="mt-1 text-xs text-slate-600">JPEG, PNG ou WebP · máximo 10 MB</p>
               <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileChange} disabled={status === "loading"} className="sr-only" />
@@ -268,7 +266,7 @@ export function PhotoUploadForm({
 
           {status === "error" && (
             <div role="alert" className="mt-5 flex items-center gap-3 rounded-2xl border border-red-300/10 bg-red-400/[0.045] p-3.5">
-              <div className="relative size-16 shrink-0"><Image src="/assets/gti-click/error-camera.jpg" alt="Câmera GTI CLICK com alerta" fill sizes="4rem" className="object-contain mix-blend-screen" /></div>
+              <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-red-300/10 bg-red-400/[0.06] text-red-200"><CameraIcon className="size-5" /></span>
               <div><p className="text-sm font-bold text-red-100/90">Ops, esse click não foi dessa vez.</p><p className="mt-1 text-xs leading-relaxed text-slate-500">{message}</p><button type="button" onClick={() => { setStatus("idle"); setMessage(""); }} className="mt-2 text-xs font-bold text-violet-300 hover:text-white">Tentar novamente</button></div>
             </div>
           )}

@@ -49,16 +49,16 @@ export default async function EventPage({
           <EventArtwork name={event.nome} date={event.data} location={event.local} />
         </section>
 
-        <section className="px-5 pt-6 sm:px-7">
+        <section className="px-5 pt-5 sm:px-7">
             <span className="event-section-label"><span className="eyebrow-dot" />Evento da galera</span>
-            <h2 className="mt-3 text-[1.8rem] leading-[1.02] font-black tracking-[-0.045em] text-white sm:text-3xl">
+            <h2 className="mt-3 text-[1.25rem] leading-tight font-black tracking-[-0.025em] text-white sm:text-2xl">
               A Galera do TI tá no Summit! 📸
             </h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-400">
+            <p className="mt-2 text-[0.78rem] leading-relaxed text-slate-400">
               Registre, compartilhe e reviva os melhores momentos com a galera.
             </p>
 
-            <div className="mt-5 grid grid-cols-2 gap-2.5">
+            <div className="mt-4 grid grid-cols-2 gap-2.5">
               <div className="stat-chip">
                 <span className="stat-chip-icon"><ImageIcon className="size-4.5" /></span>
                 <div><p className="text-lg font-black text-white">{photoCount}</p><p className="text-[0.62rem] text-slate-500">fotos</p></div>
@@ -69,16 +69,16 @@ export default async function EventPage({
               </div>
             </div>
 
-            <div className="mt-5 grid gap-2.5">
-              <Link href={`/evento/${event.slug}/enviar`} className="gradient-button w-full text-base">
+            <div className="mt-4 grid gap-2.5">
+              <Link href={`/evento/${event.slug}/enviar`} className="gradient-button w-full text-sm">
                 <CameraIcon className="size-5" />Enviar foto
               </Link>
-              <Link href={`/evento/${event.slug}/galeria`} className="secondary-button w-full text-base">
+              <Link href={`/evento/${event.slug}/galeria`} className="secondary-button w-full text-sm">
                 <ImageIcon className="size-5 text-violet-300" />Ver galeria
               </Link>
             </div>
 
-            <p className="mt-5 text-center text-[0.67rem] text-slate-600">Publicou, apareceu. Essa memória agora é da galera 💜</p>
+            <p className="mt-4 text-center text-[0.62rem] text-slate-600">Publicou, apareceu. Essa memória agora é da galera 💜</p>
         </section>
 
         {error === "revoke" && (

@@ -86,7 +86,7 @@ export default async function ModerationPage({
           )}
 
           {!photosError && !signedResult.error && !visiblePhotos.length && (
-            <EmptyState icon={<CheckIcon className="size-6" />} visual={<Image src="/assets/gti-click/mascot-phone.jpg" alt="Mascote GTI CLICK comemorando" fill sizes="10rem" className="object-contain mix-blend-screen" />} title="Tudo revisado por aqui" description="Nenhuma foto está aguardando aprovação neste momento." />
+            <EmptyState icon={<CheckIcon className="size-6" />} title="Tudo revisado por aqui" description="Nenhuma foto está aguardando aprovação neste momento." />
           )}
 
           {visiblePhotos.length > 0 && (

@@ -8,7 +8,6 @@ import {
   BackLink,
   CameraIcon,
   CheckIcon,
-  GtiLogo,
   ImageIcon,
   MobileEventNav,
   ShieldIcon,
@@ -189,22 +188,16 @@ export function PhotoUploadForm({
 
   return (
     <AppShell>
-      <div className="mx-auto min-h-svh w-full max-w-2xl px-4 pb-28 pt-5 sm:px-7 lg:pb-10">
+      <div className="mx-auto min-h-svh w-full max-w-xl px-4 pb-28 pt-5 sm:px-7 lg:pb-10">
         <header className="flex items-center justify-between">
           <BackLink href={`/evento/${eventSlug}`}>Voltar</BackLink>
-          <GtiLogo size="compact" />
+          <span className="max-w-40 truncate text-[0.62rem] font-black tracking-[0.1em] text-violet-300 uppercase">{eventName}</span>
         </header>
 
-        <section className="pt-5">
-          <div className="upload-intro">
-            <div className="relative z-10 max-w-[72%] sm:max-w-md">
-              <p className="mb-2 text-[0.62rem] font-black tracking-[0.12em] text-violet-300 uppercase">{eventName}</p>
-              <h1 className="text-[2.35rem] leading-[0.95] font-black tracking-[-0.055em] text-white sm:text-5xl">Joga na galeria! 📸</h1>
-              <p className="mt-2 text-sm text-slate-400">Mostra pra galera como foi. Publicou, apareceu.</p>
-            </div>
-            <div className="upload-mascot">
-              <Image src="/assets/gti-click/mascot-camera.jpg" alt="Mascote GTI CLICK com câmera" fill sizes="9rem" className="object-contain object-bottom mix-blend-screen" />
-            </div>
+          <section className="pt-5">
+          <div className="upload-heading">
+            <h1 className="text-[2.25rem] leading-[0.95] font-black tracking-[-0.055em] text-white sm:text-5xl">Joga na galeria! 📸</h1>
+            <p className="mt-2 text-sm text-slate-400">Mostra pra galera como foi!</p>
           </div>
 
           {previewUrl ? (

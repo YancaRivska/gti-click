@@ -246,38 +246,26 @@ export function EventArtwork({
 }) {
   return (
     <div className={`event-artwork ${compact ? "event-artwork-compact" : ""}`}>
-      <div className="event-artwork-media">
-        <Image
-          src="/assets/gti-click/banner.jpg"
-          alt="GTI CLICK — registros da galera em eventos"
-          fill
-          priority
-          sizes="(max-width: 768px) 100vw, 42rem"
-          className="object-cover"
-        />
-        <div className="event-artwork-grid" aria-hidden="true" />
-        <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between p-4 sm:p-5">
-          <span className="event-badge">AWS</span>
-          <span className="grid size-10 place-items-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur-md">
-            <CameraIcon className="size-5" />
-          </span>
-        </div>
+      <Image
+        src="/assets/gti-click/banner.jpg"
+        alt="GTI CLICK — registros da galera em eventos"
+        fill
+        priority
+        sizes="(max-width: 768px) 100vw, 36rem"
+        className="event-cover-image object-cover"
+      />
+      <div className="event-cover-shade" aria-hidden="true" />
+      <div className="event-artwork-grid" aria-hidden="true" />
+      <div className="event-cover-top">
+        <span className="event-cover-camera"><CameraIcon className="size-4" /></span>
       </div>
-      <div className="event-artwork-copy">
-        <div className="relative z-10">
-          <p className="mb-3 inline-flex rounded-full border border-violet-300/15 bg-violet-500/15 px-3 py-1.5 text-[0.65rem] font-black tracking-[0.12em] text-violet-100 uppercase shadow-[0_8px_24px_rgba(124,58,237,.2)]">
-            03 set · São Paulo
-          </p>
-          <h2 className={`${compact ? "text-2xl" : "text-[2.45rem] sm:text-5xl"} max-w-[94%] font-black leading-[0.9] tracking-[-0.055em] text-white uppercase`}>
-            {name}
-          </h2>
-          <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold text-slate-400">
-            <span>{date}</span>
-            <span className="text-violet-300">•</span>
-            <span>{location}</span>
-          </div>
-        </div>
-        <div className="event-artwork-orbit" aria-hidden="true" />
+      <div className="event-cover-copy">
+        <span className="event-badge mb-3">AWS</span>
+        <h1 className={`${compact ? "text-2xl" : "text-[2.35rem] sm:text-[2.8rem]"} max-w-[19rem] font-black leading-[0.9] tracking-[-0.055em] text-white uppercase`}>
+          {name}
+        </h1>
+        <p className="event-date-badge">03 set <span>•</span> São Paulo</p>
+        <p className="mt-3 text-[0.67rem] font-semibold text-white/55">{date} · {location}</p>
       </div>
     </div>
   );

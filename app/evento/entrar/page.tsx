@@ -66,53 +66,50 @@ export default function EventEntryPage() {
   }
 
   return (
-    <AppShell>
-      <div className="mx-auto flex min-h-svh w-full max-w-6xl flex-col px-4 pb-7 pt-4 sm:px-8 lg:px-10">
+    <AppShell className="entry-app">
+      <div className="mx-auto flex min-h-svh w-full max-w-md flex-col px-5 pb-7 pt-4 sm:px-6">
         <header className="flex items-center justify-between">
           <BackLink href="/">Início</BackLink>
-          <GtiLogo size="default" />
+          <GtiLogo size="compact" />
         </header>
 
-        <main className="entry-layout flex flex-1 flex-col justify-center py-5 lg:grid lg:grid-cols-[1.08fr_.92fr] lg:items-center lg:gap-8 lg:py-10">
-          <section className="entry-stage">
-            <div className="entry-stage-copy">
-              <span className="eyebrow">
-                <SparklesIcon className="size-3.5" />
-                Álbum exclusivo
-              </span>
-              <h1 className="mt-4 max-w-xs text-[2.3rem] leading-[0.92] font-black tracking-[-0.06em] text-white sm:text-5xl lg:text-6xl">
-                Seu próximo <span className="text-gradient">click</span> começa aqui.
+        <main className="flex flex-1 flex-col py-4">
+          <section className="entry-visual fade-up">
+            <div className="entry-visual-copy">
+              <span className="entry-context"><SparklesIcon className="size-3.5" />Álbum exclusivo</span>
+              <h1 className="mt-3 text-[2.45rem] leading-[0.92] font-black tracking-[-0.06em] text-white">
+                Entre no <span className="text-gradient">evento.</span>
               </h1>
-              <p className="mt-4 max-w-60 text-sm leading-relaxed text-slate-400 sm:max-w-xs sm:text-base">
-                Entre no álbum oficial do evento e registre tudo com a galera.
+              <p className="mt-2 max-w-[13rem] text-sm leading-relaxed text-slate-400">
+                Digite o código e entra com a galera.
               </p>
             </div>
-
-            <div className="entry-mascot">
+            <div className="entry-visual-glow" aria-hidden="true" />
+            <div className="entry-mascot mascot-float">
               <Image
                 src="/assets/gti-click/mascot-phone-seated.jpg"
                 alt="Mascote GTI CLICK pronto para entrar no evento"
                 fill
                 priority
-                sizes="(max-width: 1024px) 13rem, 24rem"
+                sizes="11rem"
                 className="object-contain object-bottom mix-blend-screen"
               />
             </div>
-            <span className="entry-camera-bubble" aria-hidden="true"><CameraIcon className="size-5" /></span>
+            <span className="entry-camera-bubble" aria-hidden="true"><CameraIcon className="size-4" /></span>
           </section>
 
           <section className="access-card fade-up">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <span className="text-[0.64rem] font-black tracking-[0.15em] text-violet-300 uppercase">Acesso ao evento</span>
-                <h2 className="mt-2 text-3xl font-black tracking-[-0.05em] text-white sm:text-4xl">Entre com a galera</h2>
+                <h2 className="mt-1.5 text-2xl font-black tracking-[-0.045em] text-white">Código do evento</h2>
               </div>
               <span className="access-icon"><LockIcon className="size-5" /></span>
             </div>
-            <p className="mt-3 text-sm leading-relaxed text-slate-400">Digite o código que você recebeu para abrir o álbum.</p>
+            <p className="mt-2 text-sm leading-relaxed text-slate-500">Use o código que você recebeu para abrir o álbum.</p>
 
-            <form className="mt-6" onSubmit={handleSubmit} noValidate>
-              <label htmlFor="event-code" className="text-sm font-bold text-slate-200">Código do evento</label>
+            <form className="mt-5" onSubmit={handleSubmit} noValidate>
+              <label htmlFor="event-code" className="sr-only">Código do evento</label>
               <div className="relative mt-2.5">
                 <span className="pointer-events-none absolute top-1/2 left-4 grid size-8 -translate-y-1/2 place-items-center rounded-lg bg-violet-500/10 text-violet-200">
                   <CameraIcon className="size-4" />
@@ -133,7 +130,7 @@ export default function EventEntryPage() {
                   autoCapitalize="characters"
                   spellCheck={false}
                   placeholder="Digite o código"
-                  className="field min-h-16 pl-14 pr-4 font-black tracking-[0.06em] uppercase"
+                  className="field min-h-15 pl-14 pr-4 font-black tracking-[0.06em] uppercase"
                 />
               </div>
 
@@ -156,9 +153,13 @@ export default function EventEntryPage() {
 
             <div className="mt-5 flex items-center justify-center gap-2 border-t border-white/7 pt-4 text-[0.68rem] text-slate-500">
               <LockIcon className="size-3.5 text-violet-300" />
-              Código validado antes de criar seu acesso
+              Entrada privada e segura
             </div>
           </section>
+
+          <p className="mt-auto pt-5 text-center text-xs leading-relaxed text-slate-600">
+            Os melhores momentos da galera, em um só lugar.
+          </p>
         </main>
       </div>
     </AppShell>

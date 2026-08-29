@@ -160,10 +160,8 @@ function GalleryShell({
         </header>
 
         <div className="gallery-toolbar mb-3 flex items-center justify-between px-1 py-2.5 sm:px-0">
-          <div className="flex items-center gap-2">
-            <span className="gallery-tab is-active">Todos</span>
-            <span className="gallery-tab">Mais recentes</span>
-          </div>
+          <span className="gallery-tab is-active">Todos</span>
+          <span className="text-[0.6rem] font-semibold text-slate-600">mais recentes primeiro</span>
           <span className="flex items-center gap-1.5 text-[0.6rem] text-slate-600"><ShieldIcon className="size-3 text-violet-400" />privado</span>
         </div>
 

@@ -73,10 +73,16 @@ export default async function PhotoDetailPage({
 
   return (
     <AppShell>
-      <div className="mx-auto min-h-svh w-full max-w-3xl pb-28 lg:pb-10">
-        <header className="flex items-center justify-between px-4 py-4 sm:px-7">
+      <div className="mx-auto min-h-svh w-full max-w-xl pb-28 lg:pb-10">
+        <header className="photo-detail-header px-4 py-4 sm:px-7">
           <Link href={`/evento/${event.slug}/galeria`} aria-label="Voltar à galeria" className="icon-button rounded-full"><ArrowLeftIcon className="size-5" /></Link>
-          <div className="text-center"><p className="text-sm font-black text-white">AWS Summit SP</p><p className="mt-0.5 text-[0.58rem] text-slate-600">memória da galera</p></div>
+          <span className="photo-author-avatar">
+            {(photo.instagram_handle?.replace("@", "").charAt(0) || "G").toUpperCase()}
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-black text-white">{photo.instagram_handle || "Equipe GTI"}</p>
+            <time dateTime={photo.created_at} className="mt-0.5 block text-[0.62rem] text-slate-600">{dateFormatter.format(new Date(photo.created_at))}</time>
+          </div>
           <span aria-hidden="true" className="grid size-11 place-items-center text-xl tracking-[0.18em] text-slate-500">•••</span>
         </header>
 
@@ -84,20 +90,7 @@ export default async function PhotoDetailPage({
           <p role="alert" className="mx-4 mb-3 rounded-xl border border-red-300/10 bg-red-400/[0.05] px-3 py-2.5 text-xs text-red-200/80 sm:mx-7">Não conseguimos excluir essa foto. Tente novamente.</p>
         )}
 
-        <section className="px-4 pb-3 sm:px-7">
-          <div className="mb-4 flex items-center gap-3">
-            <span className="grid size-10 place-items-center rounded-full bg-gradient-to-br from-fuchsia-500 to-violet-600 text-sm font-black text-white shadow-[0_8px_24px_rgba(124,58,237,.25)]">
-              {(photo.instagram_handle?.replace("@", "").charAt(0) || "G").toUpperCase()}
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-black text-white">{photo.instagram_handle || "Participante GTI"}</p>
-              <time dateTime={photo.created_at} className="mt-0.5 block text-[0.65rem] text-slate-600">{dateFormatter.format(new Date(photo.created_at))}</time>
-            </div>
-            <span className="rounded-full border border-violet-300/12 bg-violet-400/[0.07] px-2.5 py-1 text-[0.58rem] font-bold text-violet-200/90">No álbum</span>
-          </div>
-        </section>
-
-        <div className="overflow-hidden bg-black/38 shadow-[0_24px_70px_rgba(0,0,0,.42)] sm:mx-7 sm:rounded-[1.4rem]">
+        <div className="mx-3 overflow-hidden rounded-[1.35rem] bg-black/38 shadow-[0_24px_70px_rgba(0,0,0,.42)] sm:mx-7">
           <Image src={signedResult.data.signedUrl} alt={photo.caption || "Foto do evento"} width={1600} height={1400} unoptimized priority sizes="(max-width: 768px) 100vw, 48rem" className="max-h-[72svh] min-h-80 w-full object-contain" />
         </div>
 

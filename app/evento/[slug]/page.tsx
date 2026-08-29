@@ -1,14 +1,12 @@
-import Image from "next/image";
 import Link from "next/link";
 import { logout } from "@/app/auth/actions";
 import {
   AppShell,
+  ArrowLeftIcon,
   CameraIcon,
   EventArtwork,
-  GtiLogo,
   ImageIcon,
   MobileEventNav,
-  UploadIcon,
   UsersIcon,
 } from "@/components/gti-ui";
 import { events } from "@/data/events";
@@ -42,39 +40,36 @@ export default async function EventPage({
 
   return (
     <AppShell>
-      <div className="mx-auto min-h-svh w-full max-w-5xl pb-28 lg:px-8 lg:pb-10 lg:pt-6">
-        <header className="flex items-center justify-between px-5 py-4 sm:px-7 lg:px-0">
-          <GtiLogo size="compact" />
-          <span className="live-pill">
-            <span className="live-pill-dot" />
-            Summit 2026
-          </span>
-        </header>
-
-        <section className="lg:grid lg:grid-cols-[1.08fr_.92fr] lg:items-stretch lg:gap-8">
+      <div className="event-screen mx-auto min-h-svh w-full max-w-lg pb-28 lg:pb-10">
+        <section className="relative">
+          <header className="event-topbar">
+            <Link href="/evento/entrar" aria-label="Voltar" className="event-topbar-button"><ArrowLeftIcon className="size-5" /></Link>
+            <span className="event-topbar-label"><span className="live-pill-dot" />Summit 2026</span>
+          </header>
           <EventArtwork name={event.nome} date={event.data} location={event.local} />
+        </section>
 
-          <div className="px-5 pt-7 sm:px-7 lg:flex lg:flex-col lg:justify-center lg:px-0 lg:py-5">
-            <span className="eyebrow"><span className="eyebrow-dot" />Evento da galera</span>
-            <h1 className="mt-4 text-[2.15rem] leading-[0.98] font-black tracking-[-0.055em] text-white sm:text-5xl">
+        <section className="px-5 pt-6 sm:px-7">
+            <span className="event-section-label"><span className="eyebrow-dot" />Evento da galera</span>
+            <h2 className="mt-3 text-[1.8rem] leading-[1.02] font-black tracking-[-0.045em] text-white sm:text-3xl">
               A Galera do TI tá no Summit! 📸
-            </h1>
-            <p className="mt-4 max-w-lg text-sm leading-relaxed text-slate-400 sm:text-base">
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-slate-400">
               Registre, compartilhe e reviva os melhores momentos com a galera.
             </p>
 
-            <div className="mt-6 grid grid-cols-2 gap-2.5">
+            <div className="mt-5 grid grid-cols-2 gap-2.5">
               <div className="stat-chip">
-                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-violet-500/12 text-violet-200"><ImageIcon className="size-5" /></span>
-                <div><p className="text-xl font-black text-white">{photoCount}</p><p className="text-[0.65rem] text-slate-500">fotos</p></div>
+                <span className="stat-chip-icon"><ImageIcon className="size-4.5" /></span>
+                <div><p className="text-lg font-black text-white">{photoCount}</p><p className="text-[0.62rem] text-slate-500">fotos</p></div>
               </div>
               <div className="stat-chip">
-                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-fuchsia-500/10 text-fuchsia-200"><UsersIcon className="size-5" /></span>
-                <div><p className="text-xl font-black text-white">{participantCount}</p><p className="text-[0.65rem] text-slate-500">participantes</p></div>
+                <span className="stat-chip-icon is-pink"><UsersIcon className="size-4.5" /></span>
+                <div><p className="text-lg font-black text-white">{participantCount}</p><p className="text-[0.62rem] text-slate-500">participantes</p></div>
               </div>
             </div>
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-[1.2fr_.8fr] lg:grid-cols-1">
+            <div className="mt-5 grid gap-2.5">
               <Link href={`/evento/${event.slug}/enviar`} className="gradient-button w-full text-base">
                 <CameraIcon className="size-5" />Enviar foto
               </Link>
@@ -83,26 +78,16 @@ export default async function EventPage({
               </Link>
             </div>
 
-            <div className="event-memory-strip relative mt-6 hidden min-h-32 overflow-hidden p-4 sm:block lg:mt-7">
-              <div className="relative z-10 max-w-[66%]">
-                <UploadIcon className="size-5 text-violet-300" />
-                <p className="mt-3 text-sm font-black text-white">Seu olhar também faz parte.</p>
-                <p className="mt-1 text-xs leading-relaxed text-slate-500">Publicou, apareceu. Cada click ajuda a contar a história desse dia.</p>
-              </div>
-              <div className="absolute -right-1 -bottom-7 h-40 w-40">
-                <Image src="/assets/gti-click/mascot-camera.jpg" alt="Mascote GTI CLICK com câmera" fill sizes="8rem" className="object-contain object-bottom mix-blend-screen" />
-              </div>
-            </div>
-          </div>
+            <p className="mt-5 text-center text-[0.67rem] text-slate-600">Publicou, apareceu. Essa memória agora é da galera 💜</p>
         </section>
 
         {error === "revoke" && (
-          <p role="alert" className="mx-5 mt-5 rounded-xl border border-red-300/10 bg-red-400/[0.055] px-4 py-3 text-sm text-red-200/85 sm:mx-7 lg:mx-0">
+          <p role="alert" className="mx-5 mt-5 rounded-xl border border-red-300/10 bg-red-400/[0.055] px-4 py-3 text-sm text-red-200/85 sm:mx-7">
             Não foi possível revogar o consentimento. Tente novamente.
           </p>
         )}
 
-        <footer className="mx-5 mt-8 flex items-center justify-between border-t border-white/7 py-5 text-xs sm:mx-7 lg:mx-0">
+        <footer className="mx-5 mt-7 flex items-center justify-between border-t border-white/7 py-5 text-xs sm:mx-7">
           <form action={logout}>
             <button type="submit" className="min-h-11 px-2 font-semibold text-slate-600 transition hover:text-white">Sair do evento</button>
           </form>

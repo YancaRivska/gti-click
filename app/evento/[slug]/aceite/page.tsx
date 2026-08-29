@@ -1,11 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   AppShell,
   BackLink,
   CheckIcon,
-  GtiLogo,
   LockIcon,
   ShieldIcon,
 } from "@/components/gti-ui";
@@ -48,7 +46,7 @@ export default async function ConsentPage({
       <div className="mx-auto flex min-h-svh w-full max-w-xl flex-col px-5 pb-8 pt-5 sm:px-8">
         <header className="flex items-center justify-between">
           <BackLink href="/evento/entrar">Voltar</BackLink>
-          <GtiLogo size="compact" />
+          <span className="text-[0.62rem] font-black tracking-[0.15em] text-violet-300 uppercase">GTI CLICK</span>
         </header>
 
         <main className="flex flex-1 flex-col py-7">
@@ -103,12 +101,9 @@ export default async function ConsentPage({
             </button>
           </form>
 
-          <div className="relative mt-5 flex min-h-20 items-center justify-center overflow-hidden">
+          <div className="relative mt-5 flex min-h-14 items-center justify-center overflow-hidden">
             <div className="flex items-center gap-2 text-[0.68rem] text-slate-600">
               <LockIcon className="size-3.5 text-violet-300" />Seus dados estão seguros com a gente.
-            </div>
-            <div className="absolute -right-4 bottom-[-3.25rem] size-28 opacity-35">
-              <Image src="/assets/gti-click/mascot-phone-seated.jpg" alt="" fill sizes="7rem" className="object-contain mix-blend-screen" />
             </div>
           </div>
         </main>

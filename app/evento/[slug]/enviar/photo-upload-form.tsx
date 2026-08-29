@@ -194,15 +194,15 @@ export function PhotoUploadForm({
           <GtiLogo size="compact" />
         </header>
 
-        <section className="pt-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
+        <section className="pt-5">
+          <div className="upload-intro">
+            <div className="relative z-10 max-w-[72%] sm:max-w-md">
               <p className="mb-2 text-[0.62rem] font-black tracking-[0.12em] text-violet-300 uppercase">{eventName}</p>
-              <h1 className="text-3xl font-black tracking-[-0.05em] text-white sm:text-4xl">Joga na galeria! 📸</h1>
-              <p className="mt-2 text-sm text-slate-500">Mostra pra galera como foi!</p>
+              <h1 className="text-[2.35rem] leading-[0.95] font-black tracking-[-0.055em] text-white sm:text-5xl">Joga na galeria! 📸</h1>
+              <p className="mt-2 text-sm text-slate-400">Mostra pra galera como foi. Publicou, apareceu.</p>
             </div>
-            <div className="relative hidden size-20 shrink-0 sm:block">
-              <Image src="/assets/gti-click/mascot-camera.jpg" alt="Mascote GTI CLICK com câmera" fill sizes="5rem" className="object-contain mix-blend-screen" />
+            <div className="upload-mascot">
+              <Image src="/assets/gti-click/mascot-camera.jpg" alt="Mascote GTI CLICK com câmera" fill sizes="9rem" className="object-contain object-bottom mix-blend-screen" />
             </div>
           </div>
 
@@ -234,7 +234,7 @@ export function PhotoUploadForm({
             </label>
           </div>
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+          <form onSubmit={handleSubmit} className="upload-fields mt-6 space-y-5">
             <div>
               <div className="flex items-center justify-between gap-3">
                 <label htmlFor="caption" className="text-sm font-bold text-slate-200">Conta pra galera <span className="font-normal text-slate-600">(opcional)</span></label>
@@ -262,7 +262,7 @@ export function PhotoUploadForm({
           {status === "success" && (
             <div role="status" className="mt-5 flex gap-3 rounded-2xl border border-emerald-300/12 bg-gradient-to-br from-emerald-400/[0.07] to-violet-500/[0.06] p-4 text-emerald-100">
               <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-emerald-400/10"><CheckIcon className="size-5" /></span>
-              <div><p className="font-black">Foto enviada! 💜</p><p className="mt-1 text-sm text-slate-400">Ela ficará disponível após aprovação.</p></div>
+              <div><p className="font-black">Foto publicada! 💜</p><p className="mt-1 text-sm text-slate-400">Essa memória já está na galeria da galera.</p></div>
             </div>
           )}
 
@@ -274,7 +274,7 @@ export function PhotoUploadForm({
           )}
 
           <div className="mt-5 flex items-center justify-center gap-2 text-[0.65rem] text-slate-600">
-            <ShieldIcon className="size-3.5 text-violet-300" />Envio privado e moderado
+            <ShieldIcon className="size-3.5 text-violet-300" />Envio privado · publicação imediata
           </div>
         </section>
 

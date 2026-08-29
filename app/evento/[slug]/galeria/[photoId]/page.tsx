@@ -32,7 +32,6 @@ export default async function PhotoDetailPage({
     .select("id, user_id, storage_path, caption, instagram_handle, created_at")
     .eq("id", photoId)
     .eq("event_id", event.id)
-    .eq("moderation_status", "approved")
     .maybeSingle();
 
   if (!photo) {
@@ -45,7 +44,7 @@ export default async function PhotoDetailPage({
   const [signedResult, downloadResult, relatedResult] = await Promise.all([
     supabase.storage.from(BUCKET).createSignedUrl(photo.storage_path, SIGNED_URL_DURATION),
     supabase.storage.from(BUCKET).createSignedUrl(photo.storage_path, DOWNLOAD_URL_DURATION, { download: downloadName }),
-    supabase.from("photo_uploads").select("id, storage_path, caption").eq("event_id", event.id).eq("moderation_status", "approved").neq("id", photo.id).order("created_at", { ascending: false }).limit(5),
+    supabase.from("photo_uploads").select("id, storage_path, caption").eq("event_id", event.id).neq("id", photo.id).order("created_at", { ascending: false }).limit(5),
   ]);
 
   if (signedResult.error || downloadResult.error) {
@@ -76,7 +75,7 @@ export default async function PhotoDetailPage({
       <div className="mx-auto min-h-svh w-full max-w-3xl pb-28 lg:pb-10">
         <header className="flex items-center justify-between px-4 py-4 sm:px-7">
           <Link href={`/evento/${event.slug}/galeria`} aria-label="Voltar à galeria" className="icon-button rounded-full"><ArrowLeftIcon className="size-5" /></Link>
-          <p className="text-sm font-black text-white">Foto do evento</p>
+          <div className="text-center"><p className="text-sm font-black text-white">AWS Summit SP</p><p className="mt-0.5 text-[0.58rem] text-slate-600">memória da galera</p></div>
           <span aria-hidden="true" className="grid size-11 place-items-center text-xl tracking-[0.18em] text-slate-500">•••</span>
         </header>
 
@@ -93,7 +92,7 @@ export default async function PhotoDetailPage({
               <p className="truncate text-sm font-black text-white">{photo.instagram_handle || "Participante GTI"}</p>
               <time dateTime={photo.created_at} className="mt-0.5 block text-[0.65rem] text-slate-600">{dateFormatter.format(new Date(photo.created_at))}</time>
             </div>
-            <span className="rounded-full border border-emerald-300/10 bg-emerald-400/[0.05] px-2.5 py-1 text-[0.58rem] font-bold text-emerald-200/80">Aprovada</span>
+            <span className="rounded-full border border-violet-300/12 bg-violet-400/[0.07] px-2.5 py-1 text-[0.58rem] font-bold text-violet-200/90">No álbum</span>
           </div>
         </section>
 

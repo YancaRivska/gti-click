@@ -15,7 +15,6 @@ import { requireEventAccess } from "@/lib/event-access";
 
 const BUCKET = "event-photos";
 const SIGNED_URL_DURATION = 60 * 10;
-const DOWNLOAD_URL_DURATION = 60 * 5;
 
 export default async function GalleryPage({
   params,
@@ -32,7 +31,6 @@ export default async function GalleryPage({
     .from("photo_uploads")
     .select("id, storage_path, caption, instagram_handle, created_at")
     .eq("event_id", event.id)
-    .eq("moderation_status", "approved")
     .order("created_at", { ascending: false });
 
   if (photosError) {
@@ -56,12 +54,11 @@ export default async function GalleryPage({
   }
 
   const paths = photos.map((photo) => photo.storage_path);
-  const [signedResult, downloadResult] = await Promise.all([
-    supabase.storage.from(BUCKET).createSignedUrls(paths, SIGNED_URL_DURATION),
-    supabase.storage.from(BUCKET).createSignedUrls(paths, DOWNLOAD_URL_DURATION, { download: true }),
-  ]);
+  const signedResult = await supabase.storage
+    .from(BUCKET)
+    .createSignedUrls(paths, SIGNED_URL_DURATION);
 
-  if (signedResult.error || downloadResult.error) {
+  if (signedResult.error) {
     return (
       <GalleryShell eventSlug={event.slug}>
         <EmptyState icon={<ShieldIcon className="size-6" />} visual={<Image src="/assets/gti-click/error-camera.jpg" alt="Câmera GTI CLICK com alerta" fill sizes="10rem" className="object-contain mix-blend-screen" />} title="Não conseguimos carregar a galeria" description="Os links privados não ficaram disponíveis agora. Tente novamente daqui a pouco." />
@@ -70,11 +67,9 @@ export default async function GalleryPage({
   }
 
   const signedUrls = new Map(signedResult.data.map((photo) => [photo.path, photo.signedUrl]));
-  const downloadUrls = new Map(downloadResult.data.map((photo) => [photo.path, photo.signedUrl]));
   const visiblePhotos = photos.flatMap((photo) => {
     const signedUrl = signedUrls.get(photo.storage_path);
-    const downloadUrl = downloadUrls.get(photo.storage_path);
-    return signedUrl && downloadUrl ? [{ ...photo, signedUrl, downloadUrl }] : [];
+    return signedUrl ? [{ ...photo, signedUrl }] : [];
   });
 
   if (!visiblePhotos.length) {
@@ -118,7 +113,7 @@ export default async function GalleryPage({
               )}
             </Link>
             <span className="absolute top-2 left-2 rounded-full bg-black/48 px-2 py-1 text-[0.54rem] font-semibold text-white/70 backdrop-blur">{dateFormatter.format(new Date(photo.created_at))}</span>
-            <a href={photo.downloadUrl} download aria-label="Baixar foto" className="gallery-download"><DownloadIcon className="size-4" /></a>
+            <Link href={`/evento/${event.slug}/galeria/${photo.id}`} aria-label="Abrir foto para baixar" className="gallery-download"><DownloadIcon className="size-4" /></Link>
           </article>
         ))}
       </div>
@@ -138,18 +133,21 @@ function GalleryShell({
   return (
     <AppShell>
       <div className="mx-auto min-h-svh w-full max-w-7xl px-2.5 pb-28 pt-4 sm:px-6 lg:px-8 lg:pb-10">
-        <header className="flex items-center justify-between px-1.5 pb-4 sm:px-0">
+        <header className="gallery-header flex items-center justify-between px-1.5 pb-4 sm:px-0">
           <Link href={`/evento/${eventSlug}`} aria-label="Voltar ao evento" className="icon-button rounded-full"><ArrowLeftIcon className="size-5" /></Link>
           <div className="text-center">
             <div className="flex items-center justify-center gap-1.5"><h1 className="text-base font-black text-white">AWS Summit SP</h1><ApertureIcon className="size-3.5 text-violet-400" /></div>
             <p className="mt-0.5 text-[0.62rem] text-slate-600">registros da galera</p>
           </div>
-          <span className="grid size-11 place-items-center rounded-full border border-white/8 bg-white/[0.03] text-[0.63rem] font-black text-violet-300">{photoCount ?? "—"}</span>
+          <span className="gallery-count">{photoCount ?? "—"}</span>
         </header>
 
-        <div className="mb-3 flex items-center justify-between border-y border-white/6 px-1 py-2.5 sm:px-0">
-          <span className="rounded-full bg-violet-600 px-3.5 py-1.5 text-[0.65rem] font-black text-white shadow-[0_8px_22px_rgba(124,58,237,.22)]">Todos</span>
-          <span className="flex items-center gap-1.5 text-[0.6rem] text-slate-600"><ShieldIcon className="size-3 text-violet-400" />álbum privado</span>
+        <div className="gallery-toolbar mb-3 flex items-center justify-between px-1 py-2.5 sm:px-0">
+          <div className="flex items-center gap-2">
+            <span className="gallery-tab is-active">Todos</span>
+            <span className="gallery-tab">Mais recentes</span>
+          </div>
+          <span className="flex items-center gap-1.5 text-[0.6rem] text-slate-600"><ShieldIcon className="size-3 text-violet-400" />privado</span>
         </div>
 
         {children}

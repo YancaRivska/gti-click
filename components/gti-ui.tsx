@@ -182,19 +182,21 @@ export function GtiLogo({
   size?: "compact" | "default" | "hero";
 }) {
   const sizeClass = {
-    compact: "h-12",
-    default: "h-16",
-    hero: "h-40 sm:h-48",
+    compact: "h-[3.4rem] w-[5.8rem]",
+    default: "h-[4.6rem] w-[7.8rem]",
+    hero: "h-[7.5rem] w-[12.8rem] sm:h-[8.5rem] sm:w-[14.5rem]",
   }[size];
   const content = (
-    <Image
-      src="/assets/gti-click/logo-primary.jpg"
-      alt="GTI CLICK — A galera registra. O GTI guarda."
-      width={1229}
-      height={1536}
-      priority
-      className={`${sizeClass} w-auto object-contain mix-blend-screen drop-shadow-[0_0_28px_rgba(168,85,247,.16)]`}
-    />
+    <span className={`gti-logo relative block shrink-0 overflow-hidden ${sizeClass}`}>
+      <Image
+        src="/assets/gti-click/logo-primary.jpg"
+        alt="GTI CLICK"
+        fill
+        priority
+        sizes={size === "hero" ? "15rem" : "8rem"}
+        className="object-cover object-[center_31%] mix-blend-screen"
+      />
+    </span>
   );
 
   return href ? (
@@ -244,35 +246,38 @@ export function EventArtwork({
 }) {
   return (
     <div className={`event-artwork ${compact ? "event-artwork-compact" : ""}`}>
-      <Image
-        src="/assets/gti-click/banner.jpg"
-        alt="GTI CLICK no evento da Galera do TI"
-        fill
-        priority
-        sizes="(max-width: 768px) 100vw, 42rem"
-        className="event-artwork-cover object-cover"
-      />
-      <div className="event-artwork-grid" aria-hidden="true" />
-      <div className="relative z-10 flex h-full flex-col justify-between">
-        <div className="flex items-center justify-between">
+      <div className="event-artwork-media">
+        <Image
+          src="/assets/gti-click/banner.jpg"
+          alt="GTI CLICK — registros da galera em eventos"
+          fill
+          priority
+          sizes="(max-width: 768px) 100vw, 42rem"
+          className="object-cover"
+        />
+        <div className="event-artwork-grid" aria-hidden="true" />
+        <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between p-4 sm:p-5">
           <span className="event-badge">AWS</span>
-          <span className="grid size-10 place-items-center rounded-full border border-white/15 bg-black/25 text-white backdrop-blur-md">
+          <span className="grid size-10 place-items-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur-md">
             <CameraIcon className="size-5" />
           </span>
         </div>
-        <div>
-          <p className="mb-3 inline-flex rounded-full bg-violet-600 px-3 py-1.5 text-[0.65rem] font-black tracking-[0.12em] text-white uppercase shadow-[0_8px_24px_rgba(124,58,237,.35)]">
+      </div>
+      <div className="event-artwork-copy">
+        <div className="relative z-10">
+          <p className="mb-3 inline-flex rounded-full border border-violet-300/15 bg-violet-500/15 px-3 py-1.5 text-[0.65rem] font-black tracking-[0.12em] text-violet-100 uppercase shadow-[0_8px_24px_rgba(124,58,237,.2)]">
             03 set · São Paulo
           </p>
-          <h2 className={`${compact ? "text-2xl" : "text-[2.55rem] sm:text-5xl"} max-w-[92%] font-black leading-[0.88] tracking-[-0.055em] text-white uppercase [text-shadow:0_3px_20px_rgba(0,0,0,.72)]`}>
+          <h2 className={`${compact ? "text-2xl" : "text-[2.45rem] sm:text-5xl"} max-w-[94%] font-black leading-[0.9] tracking-[-0.055em] text-white uppercase`}>
             {name}
           </h2>
-          <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold text-white/72">
+          <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold text-slate-400">
             <span>{date}</span>
             <span className="text-violet-300">•</span>
             <span>{location}</span>
           </div>
         </div>
+        <div className="event-artwork-orbit" aria-hidden="true" />
       </div>
     </div>
   );
@@ -327,7 +332,7 @@ export function MobileEventNav({
         return (
           <Link key={item.key} href={item.href} aria-current={isActive ? "page" : undefined} className={`mobile-event-nav-item ${isActive ? "is-active" : ""} ${item.featured ? "is-featured" : ""}`}>
             <span className="mobile-event-nav-icon">{item.icon}</span>
-            {item.label}
+            <span>{item.label}</span>
           </Link>
         );
       })}

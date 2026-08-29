@@ -29,14 +29,13 @@ export default async function EventPage({
   const { slug } = await params;
   const { event, supabase } = await requireEventAccess(slug);
 
-  const { data: approvedPhotos } = await supabase
+  const { data: eventPhotos } = await supabase
     .from("photo_uploads")
     .select("user_id")
-    .eq("event_id", event.id)
-    .eq("moderation_status", "approved");
-  const photoCount = approvedPhotos?.length ?? 0;
+    .eq("event_id", event.id);
+  const photoCount = eventPhotos?.length ?? 0;
   const participantCount = new Set(
-    approvedPhotos?.map((photo) => photo.user_id) ?? [],
+    eventPhotos?.map((photo) => photo.user_id) ?? [],
   ).size;
   const error = (await searchParams).error;
 
@@ -45,16 +44,16 @@ export default async function EventPage({
       <div className="mx-auto min-h-svh w-full max-w-5xl pb-28 lg:px-8 lg:pb-10 lg:pt-6">
         <header className="flex items-center justify-between px-5 py-4 sm:px-7 lg:px-0">
           <GtiLogo size="compact" />
-          <span className="flex items-center gap-2 rounded-full border border-emerald-300/12 bg-emerald-400/[0.055] px-3 py-1.5 text-[0.65rem] font-bold text-emerald-200/90">
-            <span className="size-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_#4ade80]" />
-            Evento liberado
+          <span className="live-pill">
+            <span className="live-pill-dot" />
+            Summit 2026
           </span>
         </header>
 
-        <section className="lg:grid lg:grid-cols-[1.06fr_.94fr] lg:gap-7">
+        <section className="lg:grid lg:grid-cols-[1.08fr_.92fr] lg:items-stretch lg:gap-8">
           <EventArtwork name={event.nome} date={event.data} location={event.local} />
 
-          <div className="px-5 pt-7 sm:px-7 lg:flex lg:flex-col lg:px-0 lg:pt-3">
+          <div className="px-5 pt-7 sm:px-7 lg:flex lg:flex-col lg:justify-center lg:px-0 lg:py-5">
             <span className="eyebrow"><span className="eyebrow-dot" />Evento da galera</span>
             <h1 className="mt-4 text-[2.15rem] leading-[0.98] font-black tracking-[-0.055em] text-white sm:text-5xl">
               A Galera do TI tá no Summit! 📸
@@ -63,7 +62,7 @@ export default async function EventPage({
               Registre, compartilhe e reviva os melhores momentos com a galera.
             </p>
 
-            <div className="mt-6 grid grid-cols-2 gap-3">
+            <div className="mt-6 grid grid-cols-2 gap-2.5">
               <div className="stat-chip">
                 <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-violet-500/12 text-violet-200"><ImageIcon className="size-5" /></span>
                 <div><p className="text-xl font-black text-white">{photoCount}</p><p className="text-[0.65rem] text-slate-500">fotos</p></div>
@@ -74,7 +73,7 @@ export default async function EventPage({
               </div>
             </div>
 
-            <div className="mt-6 grid gap-3">
+            <div className="mt-6 grid gap-3 sm:grid-cols-[1.2fr_.8fr] lg:grid-cols-1">
               <Link href={`/evento/${event.slug}/enviar`} className="gradient-button w-full text-base">
                 <CameraIcon className="size-5" />Enviar foto
               </Link>
@@ -83,13 +82,13 @@ export default async function EventPage({
               </Link>
             </div>
 
-            <div className="relative mt-6 hidden min-h-32 overflow-hidden rounded-2xl border border-white/7 bg-white/[0.025] p-4 sm:block lg:mt-auto">
-              <div className="relative z-10 max-w-[64%]">
+            <div className="event-memory-strip relative mt-6 hidden min-h-32 overflow-hidden p-4 sm:block lg:mt-7">
+              <div className="relative z-10 max-w-[66%]">
                 <UploadIcon className="size-5 text-violet-300" />
                 <p className="mt-3 text-sm font-black text-white">Seu olhar também faz parte.</p>
-                <p className="mt-1 text-xs leading-relaxed text-slate-500">Cada click aprovado ajuda a contar a história desse dia.</p>
+                <p className="mt-1 text-xs leading-relaxed text-slate-500">Publicou, apareceu. Cada click ajuda a contar a história desse dia.</p>
               </div>
-              <div className="absolute right-2 bottom-0 h-32 w-32">
+              <div className="absolute -right-1 -bottom-7 h-40 w-40">
                 <Image src="/assets/gti-click/mascot-camera.jpg" alt="Mascote GTI CLICK com câmera" fill sizes="8rem" className="object-contain object-bottom mix-blend-screen" />
               </div>
             </div>

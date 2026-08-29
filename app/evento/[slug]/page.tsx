@@ -11,6 +11,7 @@ import {
 } from "@/components/gti-ui";
 import { events } from "@/data/events";
 import { requireEventAccess } from "@/lib/event-access";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { RevokeConsentButton } from "./revoke-consent-button";
 
 export function generateStaticParams() {
@@ -27,15 +28,43 @@ export default async function EventPage({
   const { slug } = await params;
   const { event, supabase } = await requireEventAccess(slug);
 
-  const { data: eventPhotos } = await supabase
+  const eventPhotosResult = await supabase
     .from("photo_uploads")
     .select("user_id")
     .eq("event_id", event.id)
     .neq("moderation_status", "rejected");
-  const photoCount = eventPhotos?.length ?? 0;
-  const participantCount = new Set(
+  let eventPhotos = eventPhotosResult.data;
+
+  if (eventPhotosResult.error) {
+    const fallback = await supabase
+      .from("photo_uploads")
+      .select("user_id")
+      .eq("event_id", event.id);
+
+    eventPhotos = fallback.data;
+  }
+
+  eventPhotos ??= [];
+  const photoCount = eventPhotos.length;
+  let participantCount = new Set(
     eventPhotos?.map((photo) => photo.user_id) ?? [],
   ).size;
+
+  try {
+    const admin = createAdminClient();
+    const { count } = await admin
+      .from("event_consents")
+      .select("id", { count: "exact", head: true })
+      .eq("event_id", event.id)
+      .eq("consent_accepted", true)
+      .eq("consent_version", "1.0");
+
+    if (count !== null) {
+      participantCount = count;
+    }
+  } catch {
+    // A contagem de autores das fotos continua disponível sem credenciais administrativas.
+  }
   const error = (await searchParams).error;
 
   return (

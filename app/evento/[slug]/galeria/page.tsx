@@ -134,11 +134,11 @@ export default async function GalleryPage({
             <div className="gallery-card-body">
               <div className="flex gap-1.5">
                 {photo.downloadUrl ? (
-                  <a href={photo.downloadUrl} download className="gallery-card-action" aria-label="Baixar foto">
+                  <a href={photo.downloadUrl} download className="gallery-card-action is-download" aria-label="Baixar foto">
                     <DownloadIcon className="size-3.5" /><span>Baixar</span>
                   </a>
                 ) : (
-                  <Link href={`/evento/${event.slug}/galeria/${photo.id}`} className="gallery-card-action" aria-label="Abrir foto para baixar">
+                  <Link href={`/evento/${event.slug}/galeria/${photo.id}`} className="gallery-card-action is-download" aria-label="Abrir foto para baixar">
                     <DownloadIcon className="size-3.5" /><span>Abrir</span>
                   </Link>
                 )}

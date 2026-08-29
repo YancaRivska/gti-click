@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   ApertureIcon,
@@ -44,6 +45,18 @@ export default function Home() {
             <span className="reference-scan-icon"><ApertureIcon className="size-4" /></span>
           </Link>
         </main>
+
+        <div className="home-mascot-mark" aria-hidden="true">
+          <Image
+            src="/assets/gti-click/mascot-phone.jpg"
+            alt=""
+            fill
+            priority
+            sizes="7rem"
+            className="object-contain object-bottom mix-blend-screen"
+          />
+        </div>
+        <p className="home-community-signature">GALERA DO TI</p>
       </div>
     </AppShell>
   );

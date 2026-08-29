@@ -8,6 +8,7 @@ import {
   ShieldIcon,
 } from "@/components/gti-ui";
 import { WatermarkedDownloadButton } from "@/components/watermarked-download-button";
+import { PhotoLikeButton } from "@/components/photo-like-button";
 import { hasAdminSession } from "@/lib/admin-auth";
 import { requireEventAccess } from "@/lib/event-access";
 import { DeleteOwnPhotoButton } from "./delete-own-photo-button";
@@ -51,9 +52,10 @@ export default async function PhotoDetailPage({
     notFound();
   }
 
-  const [signedResult, relatedResult] = await Promise.all([
+  const [signedResult, relatedResult, likesResult] = await Promise.all([
     supabase.storage.from(BUCKET).createSignedUrl(photo.storage_path, SIGNED_URL_DURATION),
     supabase.from("photo_uploads").select("id, storage_path, caption").eq("event_id", event.id).neq("moderation_status", "rejected").neq("id", photo.id).order("created_at", { ascending: false }).limit(5),
+    supabase.from("photo_likes").select("user_id").eq("photo_id", photo.id),
   ]);
 
   if (signedResult.error) {
@@ -78,6 +80,9 @@ export default async function PhotoDetailPage({
   const reportSubject = encodeURIComponent(`Reportar foto ${photo.id} — GTI CLICK`);
   const reportBody = encodeURIComponent(`Olá, equipe GTI. Gostaria de reportar a foto ${photo.id} do evento ${event.nome}.`);
   const query = await searchParams;
+  const likesEnabled = !likesResult.error;
+  const initialLikeCount = likesResult.data?.length ?? 0;
+  const initialLiked = likesResult.data?.some((like) => like.user_id === user.id) ?? false;
 
   return (
     <AppShell>
@@ -104,6 +109,13 @@ export default async function PhotoDetailPage({
 
         <section className="px-4 pt-4 sm:px-7">
           <div className="media-action-bar">
+            <PhotoLikeButton
+              eventSlug={event.slug}
+              photoId={photo.id}
+              initialLiked={initialLiked}
+              initialCount={initialLikeCount}
+              enabled={likesEnabled}
+            />
             <WatermarkedDownloadButton eventSlug={event.slug} photoId={photo.id} />
             <SharePhotoButton />
             <DeleteOwnPhotoButton

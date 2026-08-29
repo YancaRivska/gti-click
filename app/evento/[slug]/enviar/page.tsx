@@ -1,4 +1,5 @@
 import { requireEventAccess } from "@/lib/event-access";
+import { isEventUploadOpen } from "@/lib/event-upload";
 import { PhotoUploadForm } from "./photo-upload-form";
 
 export default async function PhotoUploadPage({
@@ -15,6 +16,8 @@ export default async function PhotoUploadPage({
       eventName={event.nome}
       eventSlug={event.slug}
       userId={user.id}
+      uploadClosesAt={event.uploadClosesAt}
+      initialUploadOpen={isEventUploadOpen(event)}
     />
   );
 }

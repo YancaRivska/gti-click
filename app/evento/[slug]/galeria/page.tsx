@@ -11,8 +11,10 @@ import {
   ShieldIcon,
 } from "@/components/gti-ui";
 import { WatermarkedDownloadButton } from "@/components/watermarked-download-button";
+import { PhotoLikeButton } from "@/components/photo-like-button";
 import { hasAdminSession } from "@/lib/admin-auth";
 import { requireEventAccess } from "@/lib/event-access";
+import { isEventUploadOpen } from "@/lib/event-upload";
 import { DeleteOwnPhotoButton } from "./[photoId]/delete-own-photo-button";
 
 const BUCKET = "event-photos";
@@ -27,6 +29,7 @@ export default async function GalleryPage({
 }) {
   const { slug } = await params;
   const { event, supabase, user } = await requireEventAccess(slug);
+  const uploadOpen = isEventUploadOpen(event);
   const query = await searchParams;
   const adminSession = await hasAdminSession();
 
@@ -64,7 +67,12 @@ export default async function GalleryPage({
     return (
       <GalleryShell eventSlug={event.slug} photoCount={0}>
         <EmptyState icon={<CameraIcon className="size-6" />} title="Nenhum click por aqui ainda" description="Seja o primeiro a registrar esse momento.">
-          <Link href={`/evento/${event.slug}/enviar`} className="gradient-button mt-6">Enviar uma foto</Link>
+          <Link
+            href={uploadOpen ? `/evento/${event.slug}/enviar` : `/evento/${event.slug}`}
+            className="gradient-button mt-6"
+          >
+            {uploadOpen ? "Enviar uma foto" : "Voltar ao evento"}
+          </Link>
         </EmptyState>
       </GalleryShell>
     );
@@ -95,6 +103,20 @@ export default async function GalleryPage({
         <EmptyState icon={<ImageIcon className="size-6" />} title="Fotos indisponíveis agora" description="Tente novamente em alguns instantes." />
       </GalleryShell>
     );
+  }
+
+  const likesResult = await supabase
+    .from("photo_likes")
+    .select("photo_id, user_id")
+    .in("photo_id", visiblePhotos.map((photo) => photo.id));
+  const likesEnabled = !likesResult.error;
+  const likesByPhoto = new Map<string, { count: number; liked: boolean }>();
+
+  for (const like of likesResult.data ?? []) {
+    const current = likesByPhoto.get(like.photo_id) ?? { count: 0, liked: false };
+    current.count += 1;
+    current.liked ||= like.user_id === user.id;
+    likesByPhoto.set(like.photo_id, current);
   }
 
   const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
@@ -133,6 +155,14 @@ export default async function GalleryPage({
                 </div>
               )}
             </Link>
+            <PhotoLikeButton
+              eventSlug={event.slug}
+              photoId={photo.id}
+              initialLiked={likesByPhoto.get(photo.id)?.liked ?? false}
+              initialCount={likesByPhoto.get(photo.id)?.count ?? 0}
+              variant="card"
+              enabled={likesEnabled}
+            />
             <div className="gallery-card-body">
               <div className="flex gap-1.5">
                 <WatermarkedDownloadButton

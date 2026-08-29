@@ -22,6 +22,7 @@ import {
   preparePhotoForUpload,
 } from "@/lib/images/process-photo";
 import { createClient } from "@/lib/supabase/browser";
+import { checkUploadAvailability } from "./actions";
 
 const BUCKET = "event-photos";
 
@@ -73,11 +74,15 @@ export function PhotoUploadForm({
   eventName,
   eventSlug,
   userId,
+  uploadClosesAt,
+  initialUploadOpen,
 }: {
   eventId: string;
   eventName: string;
   eventSlug: string;
   userId: string;
+  uploadClosesAt: string;
+  initialUploadOpen: boolean;
 }) {
   const router = useRouter();
   const [photos, setPhotos] = useState<SelectedPhoto[]>([]);
@@ -88,6 +93,7 @@ export function PhotoUploadForm({
   const [batchResult, setBatchResult] = useState<BatchResult>(null);
   const [selectionMessage, setSelectionMessage] = useState("");
   const [progress, setProgress] = useState({ current: 0, total: 0 });
+  const [uploadWindowOpen, setUploadWindowOpen] = useState(initialUploadOpen);
 
   function replacePhotos(updater: (current: SelectedPhoto[]) => SelectedPhoto[]) {
     const next = updater(photosRef.current);
@@ -104,6 +110,21 @@ export function PhotoUploadForm({
       });
     };
   }, []);
+
+  useEffect(() => {
+    if (!uploadWindowOpen) {
+      return;
+    }
+
+    const remainingTime = new Date(uploadClosesAt).getTime() - Date.now();
+
+    const timer = window.setTimeout(
+      () => setUploadWindowOpen(false),
+      Math.max(0, Math.min(remainingTime, 2_147_000_000)),
+    );
+
+    return () => window.clearTimeout(timer);
+  }, [uploadClosesAt, uploadWindowOpen]);
 
   function updatePhoto(id: string, patch: Partial<SelectedPhoto>) {
     replacePhotos((current) =>
@@ -126,6 +147,12 @@ export function PhotoUploadForm({
 
   function selectFiles(fileList: FileList | null) {
     if (!fileList || batchStatus === "uploading") {
+      return;
+    }
+
+    if (!uploadWindowOpen) {
+      setUploadWindowOpen(false);
+      setSelectionMessage("O período para enviar fotos terminou.");
       return;
     }
 
@@ -195,6 +222,23 @@ export function PhotoUploadForm({
       return;
     }
 
+    if (!uploadWindowOpen) {
+      setUploadWindowOpen(false);
+      setSelectionMessage("O período para enviar fotos terminou.");
+      return;
+    }
+
+    try {
+      if (!(await checkUploadAvailability(eventSlug))) {
+        setUploadWindowOpen(false);
+        setSelectionMessage("O período para enviar fotos terminou.");
+        return;
+      }
+    } catch {
+      setSelectionMessage("Não conseguimos confirmar o envio agora. Tente novamente.");
+      return;
+    }
+
     const targetPhotos = photosRef.current.filter((photo) =>
       photoIds ? photoIds.includes(photo.id) : photo.status === "ready" || photo.status === "error",
     );
@@ -234,6 +278,7 @@ export function PhotoUploadForm({
 
     for (const [index, photo] of targetPhotos.entries()) {
       setProgress({ current: index + 1, total: targetPhotos.length });
+
       if (photo.previewUrl) {
         URL.revokeObjectURL(photo.previewUrl);
       }
@@ -315,6 +360,48 @@ export function PhotoUploadForm({
   const progressPercentage = progress.total
     ? Math.round((progress.current / progress.total) * 100)
     : 0;
+
+  if (!uploadWindowOpen) {
+    return (
+      <AppShell>
+        <div className="mx-auto min-h-svh w-full max-w-xl px-4 pb-28 pt-5 sm:px-7 lg:pb-10">
+          <header className="flex items-center justify-between">
+            <Link
+              href={`/evento/${eventSlug}`}
+              aria-label="Voltar ao evento"
+              className="icon-button rounded-full"
+            >
+              <ArrowLeftIcon className="size-5" />
+            </Link>
+            <div className="text-right">
+              <p className="text-sm font-black text-white">GTI CLICK</p>
+              <p className="mt-0.5 max-w-40 truncate text-[0.58rem] text-slate-600">{eventName}</p>
+            </div>
+          </header>
+
+          <section className="upload-closed-state">
+            <span className="upload-closed-icon" aria-hidden="true">
+              <CheckIcon className="size-7" />
+            </span>
+            <p className="event-section-label mt-6 justify-center">
+              <span className="eyebrow-dot" /> Álbum completo
+            </p>
+            <h1 className="mt-4 text-[2.15rem] leading-[0.96] font-black tracking-[-0.05em] text-white">
+              Os envios foram encerrados 💜
+            </h1>
+            <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-slate-400">
+              O período para publicar terminou, mas você ainda pode ver, curtir e baixar os registros da galera.
+            </p>
+            <Link href={`/evento/${eventSlug}/galeria`} className="gradient-button mt-7 w-full">
+              <ImageIcon className="size-5" /> Ver galeria
+            </Link>
+          </section>
+
+          <MobileEventNav eventSlug={eventSlug} active="upload" />
+        </div>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell>

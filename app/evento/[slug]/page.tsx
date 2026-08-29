@@ -11,6 +11,7 @@ import {
 } from "@/components/gti-ui";
 import { events } from "@/data/events";
 import { requireEventAccess } from "@/lib/event-access";
+import { isEventUploadOpen } from "@/lib/event-upload";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { RevokeConsentButton } from "./revoke-consent-button";
 
@@ -27,6 +28,7 @@ export default async function EventPage({
 }) {
   const { slug } = await params;
   const { event, supabase } = await requireEventAccess(slug);
+  const uploadOpen = isEventUploadOpen(event);
 
   const eventPhotosResult = await supabase
     .from("photo_uploads")
@@ -99,15 +101,25 @@ export default async function EventPage({
             </div>
 
             <div className="mt-4 grid gap-2.5">
-              <Link href={`/evento/${event.slug}/enviar`} className="gradient-button w-full text-sm">
-                <CameraIcon className="size-5" />Enviar foto
-              </Link>
+              {uploadOpen ? (
+                <Link href={`/evento/${event.slug}/enviar`} className="gradient-button w-full text-sm">
+                  <CameraIcon className="size-5" />Enviar foto
+                </Link>
+              ) : (
+                <span className="closed-upload-button" aria-disabled="true">
+                  <CameraIcon className="size-5" />Envios encerrados
+                </span>
+              )}
               <Link href={`/evento/${event.slug}/galeria`} className="secondary-button w-full text-sm">
                 <ImageIcon className="size-5 text-violet-300" />Ver galeria
               </Link>
             </div>
 
-            <p className="mt-4 text-center text-[0.62rem] text-slate-600">Publicou, apareceu. Essa memória agora é da galera 💜</p>
+            <p className="mt-4 text-center text-[0.62rem] text-slate-600">
+              {uploadOpen
+                ? "Envios abertos até 09/09, às 23h59. Publicou, apareceu 💜"
+                : "Os envios terminaram, mas o álbum continua com a galera 💜"}
+            </p>
         </section>
 
         {error === "revoke" && (

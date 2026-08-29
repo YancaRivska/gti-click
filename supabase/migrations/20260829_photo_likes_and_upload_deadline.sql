@@ -2,6 +2,13 @@
 -- Janela de envio: até 09/09/2026 23:59:59, horário de São Paulo.
 -- Encerramento efetivo: 10/09/2026 00:00:00 America/Sao_Paulo (UTC-03).
 
+update public.photo_uploads
+set moderation_status = 'approved'
+where moderation_status = 'pending';
+
+alter table public.photo_uploads
+  alter column moderation_status set default 'approved';
+
 create table if not exists public.photo_likes (
   photo_id uuid not null references public.photo_uploads(id) on delete cascade,
   user_id uuid not null references auth.users(id) on delete cascade,

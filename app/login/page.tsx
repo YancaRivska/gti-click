@@ -8,6 +8,7 @@ export default async function LoginPage({
   searchParams,
 }: {
   searchParams: Promise<{
+    error?: string | string[];
     next?: string | string[];
   }>;
 }) {
@@ -35,12 +36,18 @@ export default async function LoginPage({
           Entre com segurança
         </h1>
         <p className="mt-3 leading-relaxed text-slate-300">
-          Vamos enviar um código de acesso para o seu e-mail.
+          Digite seu e-mail e enviaremos um link seguro para você entrar.
         </p>
 
         <div className="mt-8">
           <EmailOtpForm next={next} />
         </div>
+
+        {query.error === "link" && (
+          <p role="alert" className="mt-4 text-sm text-red-300">
+            O link é inválido ou expirou. Solicite um novo acesso.
+          </p>
+        )}
       </section>
     </main>
   );

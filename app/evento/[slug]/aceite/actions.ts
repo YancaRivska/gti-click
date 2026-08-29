@@ -21,7 +21,7 @@ export async function acceptConsent(formData: FormData) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect(`/login?next=${encodeURIComponent(consentPath)}`);
+    redirect("/evento/entrar");
   }
 
   if (!accepted) {

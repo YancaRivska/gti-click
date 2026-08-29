@@ -39,13 +39,7 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/evento") &&
     request.nextUrl.pathname !== "/evento/entrar"
   ) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set(
-      "next",
-      `${request.nextUrl.pathname}${request.nextUrl.search}`,
-    );
-
-    return NextResponse.redirect(loginUrl);
+    return NextResponse.redirect(new URL("/evento/entrar", request.url));
   }
 
   return response;

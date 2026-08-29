@@ -15,7 +15,7 @@ export const events: Event[] = [
     nome: "AWS Summit São Paulo 2026",
     data: "03/09/2026",
     local: "São Paulo - SP",
-    codigo: "AWS-SP-2026",
+    codigo: "GALERADOTIAWS",
     uploadsEnabled: true,
   },
 ];

@@ -22,8 +22,7 @@ export default async function PhotoUploadPage({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    const next = `/evento/${event.slug}/enviar`;
-    redirect(`/login?next=${encodeURIComponent(next)}`);
+    redirect("/evento/entrar");
   }
 
   if (!(await hasEventConsent(supabase, user.id, event.id))) {

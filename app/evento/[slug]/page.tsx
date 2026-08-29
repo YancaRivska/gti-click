@@ -31,8 +31,7 @@ export default async function EventPage({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    const callbackUrl = `/evento/${event.slug}`;
-    redirect(`/login?next=${encodeURIComponent(callbackUrl)}`);
+    redirect("/evento/entrar");
   }
 
   if (!(await hasEventConsent(supabase, user.id, event.id))) {

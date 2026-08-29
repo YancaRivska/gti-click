@@ -4,13 +4,16 @@ import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getEventByCode } from "@/data/events";
+import { createClient } from "@/lib/supabase/browser";
 
 export default function EventEntryPage() {
   const router = useRouter();
   const [code, setCode] = useState("");
   const [error, setError] = useState(false);
+  const [authError, setAuthError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const selectedEvent = getEventByCode(code.trim());
@@ -20,7 +23,26 @@ export default function EventEntryPage() {
       return;
     }
 
+    setAuthError(false);
+    setLoading(true);
+
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      const { error: signInError } = await supabase.auth.signInAnonymously();
+
+      if (signInError) {
+        setAuthError(true);
+        setLoading(false);
+        return;
+      }
+    }
+
     router.push(`/evento/${selectedEvent.slug}`);
+    router.refresh();
   }
 
   return (
@@ -54,6 +76,7 @@ export default function EventEntryPage() {
             onChange={(event) => {
               setCode(event.target.value);
               setError(false);
+              setAuthError(false);
             }}
             aria-invalid={error}
             aria-describedby={error ? "event-code-error" : undefined}
@@ -69,11 +92,18 @@ export default function EventEntryPage() {
             </p>
           )}
 
+          {authError && (
+            <p role="alert" className="mt-3 text-sm text-red-300">
+              Não foi possível entrar no evento. Tente novamente.
+            </p>
+          )}
+
           <button
             type="submit"
-            className="mt-6 min-h-14 w-full rounded-2xl bg-violet-600 px-6 font-bold text-white transition hover:bg-violet-500 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet-400"
+            disabled={loading}
+            className="mt-6 min-h-14 w-full rounded-2xl bg-violet-600 px-6 font-bold text-white transition hover:bg-violet-500 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet-400 disabled:cursor-wait disabled:opacity-70"
           >
-            Continuar
+            {loading ? "Entrando..." : "Continuar"}
           </button>
         </form>
       </section>

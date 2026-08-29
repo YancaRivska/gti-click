@@ -46,8 +46,7 @@ export default async function GalleryPage({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    const next = `/evento/${event.slug}/galeria`;
-    redirect(`/login?next=${encodeURIComponent(next)}`);
+    redirect("/evento/entrar");
   }
 
   if (!(await hasEventConsent(supabase, user.id, event.id))) {

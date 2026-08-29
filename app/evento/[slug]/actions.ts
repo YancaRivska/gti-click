@@ -20,7 +20,7 @@ export async function revokeConsent(formData: FormData) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect(`/login?next=${encodeURIComponent(eventPath)}`);
+    redirect("/evento/entrar");
   }
 
   const { error } = await supabase

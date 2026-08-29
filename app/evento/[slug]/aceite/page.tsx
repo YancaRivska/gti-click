@@ -25,8 +25,7 @@ export default async function ConsentPage({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    const next = `/evento/${event.slug}/aceite`;
-    redirect(`/login?next=${encodeURIComponent(next)}`);
+    redirect("/evento/entrar");
   }
 
   if (await hasEventConsent(supabase, user.id, event.id)) {

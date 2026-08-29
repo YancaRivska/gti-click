@@ -2,13 +2,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { safeReturnPath } from "@/lib/return-path";
 import { createClient } from "@/lib/supabase/server";
-import { GoogleLoginButton } from "./google-login-button";
+import { EmailOtpForm } from "./email-otp-form";
 
 export default async function LoginPage({
   searchParams,
 }: {
   searchParams: Promise<{
-    error?: string | string[];
     next?: string | string[];
   }>;
 }) {
@@ -36,22 +35,12 @@ export default async function LoginPage({
           Entre com segurança
         </h1>
         <p className="mt-3 leading-relaxed text-slate-300">
-          Use sua conta Google para continuar no evento.
+          Vamos enviar um código de acesso para o seu e-mail.
         </p>
 
         <div className="mt-8">
-          <GoogleLoginButton next={next} />
+          <EmailOtpForm next={next} />
         </div>
-
-        {query.error === "oauth" && (
-          <p role="alert" className="mt-4 text-sm text-red-300">
-            O login não foi concluído. Tente novamente.
-          </p>
-        )}
-
-        <p className="mt-5 text-xs leading-relaxed text-slate-500">
-          O GTI CLICK usa o Google somente para autenticação. Nenhum acesso ao seu Google Drive é solicitado.
-        </p>
       </section>
     </main>
   );

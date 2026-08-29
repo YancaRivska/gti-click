@@ -47,6 +47,7 @@ export function PhotoUploadForm({
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState("");
   const [caption, setCaption] = useState("");
+  const [instagramHandle, setInstagramHandle] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
 
@@ -109,6 +110,18 @@ export function PhotoUploadForm({
     setStatus("loading");
     setMessage("");
 
+    const handleWithoutAt = instagramHandle
+      .trim()
+      .replace(/\s+/g, "")
+      .replace(/^@+/, "");
+    const normalizedHandle = handleWithoutAt ? `@${handleWithoutAt}` : null;
+
+    if (normalizedHandle && normalizedHandle.length > 50) {
+      setStatus("error");
+      setMessage("O @ deve ter no máximo 50 caracteres.");
+      return;
+    }
+
     const supabase = createClient();
     const {
       data: { user },
@@ -142,6 +155,7 @@ export function PhotoUploadForm({
       event_id: eventId,
       storage_path: storagePath,
       caption: caption.trim() || null,
+      instagram_handle: normalizedHandle,
     });
 
     if (recordError) {
@@ -153,6 +167,7 @@ export function PhotoUploadForm({
     setFile(null);
     setPreviewUrl("");
     setCaption("");
+    setInstagramHandle("");
     setStatus("success");
   }
 
@@ -224,6 +239,21 @@ export function PhotoUploadForm({
             rows={3}
             disabled={status === "loading"}
             className="mt-3 w-full resize-none rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-600 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/15"
+          />
+
+          <label htmlFor="instagram-handle" className="mt-5 block text-sm font-semibold text-slate-200">
+            Seu @
+          </label>
+          <input
+            id="instagram-handle"
+            type="text"
+            value={instagramHandle}
+            onChange={(event) => setInstagramHandle(event.target.value)}
+            placeholder="@seuinstagram"
+            maxLength={50}
+            autoComplete="off"
+            disabled={status === "loading"}
+            className="mt-3 min-h-12 w-full rounded-2xl border border-white/15 bg-white/5 px-4 text-white outline-none transition placeholder:text-slate-600 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/15"
           />
 
           <button

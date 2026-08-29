@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 
 const BUCKET = "event-photos";
 const SIGNED_URL_DURATION = 60 * 10;
+const DOWNLOAD_URL_DURATION = 60 * 5;
 
 function GalleryMessage({
   children,
@@ -55,7 +56,7 @@ export default async function GalleryPage({
 
   const { data: photos, error: photosError } = await supabase
     .from("photo_uploads")
-    .select("id, storage_path, caption, created_at")
+    .select("id, storage_path, caption, instagram_handle, created_at")
     .eq("event_id", event.id)
     .order("created_at", { ascending: false });
 
@@ -82,14 +83,15 @@ export default async function GalleryPage({
     );
   }
 
-  const { data: signedPhotos, error: signedPhotosError } = await supabase.storage
-    .from(BUCKET)
-    .createSignedUrls(
-      photos.map((photo) => photo.storage_path),
-      SIGNED_URL_DURATION,
-    );
+  const paths = photos.map((photo) => photo.storage_path);
+  const [signedResult, downloadResult] = await Promise.all([
+    supabase.storage.from(BUCKET).createSignedUrls(paths, SIGNED_URL_DURATION),
+    supabase.storage
+      .from(BUCKET)
+      .createSignedUrls(paths, DOWNLOAD_URL_DURATION, { download: true }),
+  ]);
 
-  if (signedPhotosError) {
+  if (signedResult.error || downloadResult.error) {
     return (
       <GalleryShell eventName={event.nome} eventSlug={event.slug}>
         <GalleryMessage eventSlug={event.slug}>
@@ -101,11 +103,17 @@ export default async function GalleryPage({
   }
 
   const signedUrls = new Map(
-    signedPhotos.map((photo) => [photo.path, photo.signedUrl]),
+    signedResult.data.map((photo) => [photo.path, photo.signedUrl]),
+  );
+  const downloadUrls = new Map(
+    downloadResult.data.map((photo) => [photo.path, photo.signedUrl]),
   );
   const visiblePhotos = photos.flatMap((photo) => {
     const signedUrl = signedUrls.get(photo.storage_path);
-    return signedUrl ? [{ ...photo, signedUrl }] : [];
+    const downloadUrl = downloadUrls.get(photo.storage_path);
+    return signedUrl && downloadUrl
+      ? [{ ...photo, signedUrl, downloadUrl }]
+      : [];
   });
 
   if (!visiblePhotos.length) {
@@ -145,12 +153,24 @@ export default async function GalleryPage({
               {photo.caption && (
                 <p className="leading-relaxed text-white">{photo.caption}</p>
               )}
+              {photo.instagram_handle && (
+                <p className="mt-2 text-sm font-semibold text-violet-300">
+                  {photo.instagram_handle}
+                </p>
+              )}
               <time
                 dateTime={photo.created_at}
                 className="mt-2 block text-xs text-slate-500"
               >
                 {dateFormatter.format(new Date(photo.created_at))}
               </time>
+              <a
+                href={photo.downloadUrl}
+                download
+                className="mt-4 inline-flex min-h-10 items-center justify-center rounded-xl border border-violet-400/30 px-4 text-sm font-semibold text-violet-200 transition hover:bg-violet-400/10"
+              >
+                Baixar foto
+              </a>
             </div>
           </article>
         ))}

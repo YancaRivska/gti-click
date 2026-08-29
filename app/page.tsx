@@ -5,8 +5,11 @@ import {
   AppShell,
   ArrowRightIcon,
   CameraIcon,
+  GlobeIcon,
   GtiLogo,
   ImageIcon,
+  InstagramIcon,
+  MessageIcon,
   SparklesIcon,
 } from "@/components/gti-ui";
 
@@ -46,17 +49,60 @@ export default function Home() {
           </Link>
         </main>
 
-        <div className="home-mascot-mark" aria-hidden="true">
-          <Image
-            src="/assets/gti-click/mascot-phone.jpg"
-            alt=""
-            fill
-            priority
-            sizes="7rem"
-            className="object-contain object-bottom mix-blend-screen"
-          />
-        </div>
-        <p className="home-community-signature">GALERA DO TI</p>
+        <footer className="home-identity-footer">
+          <div className="home-mascot-duo" aria-hidden="true">
+            <div className="home-mascot-figure home-mascot-figure-tech">
+              <Image
+                src="/assets/gti-click/mascot-tech.png"
+                alt=""
+                fill
+                priority
+                sizes="(max-width: 430px) 34vw, 8rem"
+                className="object-contain object-bottom"
+              />
+            </div>
+            <div className="home-mascot-figure home-mascot-figure-photographer">
+              <Image
+                src="/assets/gti-click/mascot-photographer.png"
+                alt=""
+                fill
+                priority
+                sizes="(max-width: 430px) 34vw, 8rem"
+                className="object-contain object-bottom"
+              />
+            </div>
+          </div>
+
+          <nav className="home-contact-links" aria-label="Canais da Galera do TI">
+            <a
+              href="https://www.instagram.com/galera.do.ti/"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Abrir o Instagram da Galera do TI"
+            >
+              <InstagramIcon />
+              <span>@galera.do.ti</span>
+            </a>
+            <a
+              href="https://galeradoti.com"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Abrir o site galeradoti.com"
+            >
+              <GlobeIcon />
+              <span>galeradoti.com</span>
+            </a>
+            <a
+              href="https://wa.me/5519991918817"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Entrar em contato pelo WhatsApp"
+            >
+              <MessageIcon />
+              <span>Contato</span>
+            </a>
+          </nav>
+        </footer>
       </div>
     </AppShell>
   );

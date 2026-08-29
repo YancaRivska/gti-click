@@ -155,6 +155,34 @@ export function TrashIcon(props: IconProps) {
   );
 }
 
+export function InstagramIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <path d="M17.5 6.5h.01" />
+    </IconBase>
+  );
+}
+
+export function GlobeIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3c2.4 2.5 3.6 5.5 3.6 9S14.4 18.5 12 21M12 3c-2.4 2.5-3.6 5.5-3.6 9s1.2 6.5 3.6 9" />
+    </IconBase>
+  );
+}
+
+export function MessageIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 8.8 8.8 0 0 1-3.3-.7L4 20l1.5-4.2A7.5 7.5 0 1 1 20 11.5Z" />
+      <path d="M8.5 9.2c.6 2.6 2 4 4.6 4.7M8.3 8.6l1.3-.5.8 1.6-.8.7m4 3.6.7-.8 1.6.8-.5 1.3" />
+    </IconBase>
+  );
+}
+
 export function LockIcon(props: IconProps) {
   return (
     <IconBase {...props}>

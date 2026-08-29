@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getEventByCode } from "@/data/events";
 import { createClient } from "@/lib/supabase/browser";
+import { enterAdmin } from "./actions";
 
 export default function EventEntryPage() {
   const router = useRouter();
@@ -19,6 +20,16 @@ export default function EventEntryPage() {
     const selectedEvent = getEventByCode(code.trim());
 
     if (!selectedEvent) {
+      setLoading(true);
+      const adminAccess = await enterAdmin(code);
+
+      if (adminAccess) {
+        router.push("/admin/moderacao");
+        router.refresh();
+        return;
+      }
+
+      setLoading(false);
       setError(true);
       return;
     }

@@ -267,8 +267,10 @@ export function PhotoUploadForm({
 
         {status === "success" && (
           <div role="status" className="mt-5 rounded-2xl border border-violet-400/20 bg-violet-400/10 p-4 text-violet-100">
-            <p className="font-bold">Foto enviada com sucesso! 💜</p>
-            <p className="mt-1 text-sm">Essa memória agora é da galera.</p>
+            <p className="font-bold">Foto enviada! 📸</p>
+            <p className="mt-1 text-sm">
+              Ela ficará disponível na galeria após aprovação da equipe GTI.
+            </p>
           </div>
         )}
 

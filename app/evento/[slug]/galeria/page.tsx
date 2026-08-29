@@ -58,6 +58,7 @@ export default async function GalleryPage({
     .from("photo_uploads")
     .select("id, storage_path, caption, instagram_handle, created_at")
     .eq("event_id", event.id)
+    .eq("moderation_status", "approved")
     .order("created_at", { ascending: false });
 
   if (photosError) {

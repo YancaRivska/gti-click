@@ -13,6 +13,10 @@ create policy "Consenting users can view event photos"
       from public.photo_uploads photo
       where photo.storage_path = name
         and photo.event_id = 'aws-summit-sp-2026'
+        and (
+          photo.moderation_status = 'approved'
+          or photo.user_id = (select auth.uid())
+        )
     )
     and exists (
       select 1

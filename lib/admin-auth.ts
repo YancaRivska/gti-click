@@ -1,13 +1,29 @@
+import "server-only";
+
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 
 const ADMIN_COOKIE = "gti-click-admin";
-const ADMIN_SESSION_DURATION = 60 * 60;
+const ADMIN_SESSION_DURATION_SECONDS = 60 * 60;
+const MAX_ADMIN_CODE_LENGTH = 128;
 
-function createToken(code: string, secret: string) {
+function createDigest(value: string, secret: string) {
   return createHmac("sha256", secret)
-    .update(`gti-click-admin:${code}`)
+    .update(value)
     .digest("hex");
+}
+
+function createCodeDigest(code: string, secret: string) {
+  return createDigest(`gti-click-admin-code:${code}`, secret);
+}
+
+function createSessionToken(code: string, secret: string, expiresAt: number) {
+  const signature = createDigest(
+    `gti-click-admin-session:${code}:${expiresAt}`,
+    secret,
+  );
+
+  return `${expiresAt}.${signature}`;
 }
 
 function getAdminSecrets() {
@@ -29,24 +45,35 @@ function tokensMatch(first: string, second: string) {
 
 export async function createAdminSession(inputCode: string) {
   const secrets = getAdminSecrets();
+  const normalizedCode = inputCode.trim();
 
-  if (!secrets) {
+  if (
+    !secrets ||
+    !normalizedCode ||
+    normalizedCode.length > MAX_ADMIN_CODE_LENGTH
+  ) {
     return false;
   }
 
-  const inputToken = createToken(inputCode.trim(), secrets.secret);
-  const expectedToken = createToken(secrets.code, secrets.secret);
+  const inputToken = createCodeDigest(normalizedCode, secrets.secret);
+  const expectedToken = createCodeDigest(secrets.code, secrets.secret);
 
   if (!tokensMatch(inputToken, expectedToken)) {
     return false;
   }
 
+  const expiresAt = Math.floor(Date.now() / 1000) + ADMIN_SESSION_DURATION_SECONDS;
+  const sessionToken = createSessionToken(
+    secrets.code,
+    secrets.secret,
+    expiresAt,
+  );
   const cookieStore = await cookies();
-  cookieStore.set(ADMIN_COOKIE, expectedToken, {
+  cookieStore.set(ADMIN_COOKIE, sessionToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: ADMIN_SESSION_DURATION,
+    maxAge: ADMIN_SESSION_DURATION_SECONDS,
     path: "/admin",
   });
 
@@ -62,8 +89,33 @@ export async function hasAdminSession() {
 
   const cookieStore = await cookies();
   const token = cookieStore.get(ADMIN_COOKIE)?.value;
+  const [expiresAtValue, signature] = token?.split(".") ?? [];
+  const expiresAt = Number(expiresAtValue);
 
-  return Boolean(
-    token && tokensMatch(token, createToken(secrets.code, secrets.secret)),
+  if (
+    !signature ||
+    !Number.isSafeInteger(expiresAt) ||
+    expiresAt <= Math.floor(Date.now() / 1000)
+  ) {
+    return false;
+  }
+
+  const expectedToken = createSessionToken(
+    secrets.code,
+    secrets.secret,
+    expiresAt,
   );
+
+  return Boolean(token && tokensMatch(token, expectedToken));
+}
+
+export async function clearAdminSession() {
+  const cookieStore = await cookies();
+  cookieStore.set(ADMIN_COOKIE, "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 0,
+    path: "/admin",
+  });
 }

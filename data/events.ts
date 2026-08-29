@@ -21,7 +21,8 @@ export const events: Event[] = [
 ];
 
 export function getEventByCode(code: string) {
-  return events.find((event) => event.codigo === code);
+  const normalizedCode = code.trim().toUpperCase();
+  return events.find((event) => event.codigo === normalizedCode);
 }
 
 export function getEventBySlug(slug: string) {

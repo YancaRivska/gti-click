@@ -1,72 +1,130 @@
+import Image from "next/image";
 import Link from "next/link";
+import { events } from "@/data/events";
+import {
+  AppShell,
+  ArrowRightIcon,
+  CameraIcon,
+  GtiLogo,
+  ImageIcon,
+  ShieldIcon,
+  SparklesIcon,
+} from "@/components/gti-ui";
 
 export default function Home() {
+  const event = events[0];
+
   return (
-    <main className="home-shell relative flex min-h-svh flex-col overflow-hidden px-5 py-6 sm:px-8 sm:py-8">
-      <div className="lens" aria-hidden="true" />
+    <AppShell>
+      <div className="mx-auto flex min-h-svh w-full max-w-7xl flex-col px-5 py-5 sm:px-8 sm:py-7 lg:px-10">
+        <header className="flex items-center justify-between border-b border-white/8 pb-5">
+          <GtiLogo />
+          <span className="hidden items-center gap-2 text-xs font-semibold text-slate-400 sm:flex">
+            <span className="size-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_#4ade80]" />
+            Memórias do evento, em segurança
+          </span>
+        </header>
 
-      <header className="relative z-10 flex items-center gap-3">
-        <span className="grid size-10 place-items-center rounded-xl bg-violet-600 shadow-[0_10px_30px_rgba(124,58,237,0.28)]">
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            className="size-5 fill-none stroke-white"
-            strokeWidth="1.8"
-          >
-            <path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.2l1.1-1.5h6.4L16.3 6h1.2A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5v-8Z" />
-            <circle cx="12" cy="12.5" r="3.5" />
-          </svg>
-        </span>
-        <span className="text-sm font-bold tracking-[0.18em] text-white">
-          GTI CLICK
-        </span>
-      </header>
+        <section className="grid flex-1 items-center gap-14 py-14 lg:grid-cols-[1.02fr_.98fr] lg:gap-16 lg:py-20">
+          <div className="max-w-2xl">
+            <span className="eyebrow">
+              <span className="eyebrow-dot" />
+              Álbum colaborativo da galera
+            </span>
 
-      <section className="relative z-10 flex flex-1 items-center py-16 sm:py-20">
-        <div className="mx-auto w-full max-w-5xl">
-          <div className="max-w-3xl">
-            <p className="mb-5 text-sm font-semibold tracking-[0.16em] text-violet-300 uppercase">
-              A galera registra. O GTI guarda.
-            </p>
-
-            <h1 className="text-6xl leading-[0.88] font-black tracking-[-0.07em] text-white sm:text-7xl md:text-8xl lg:text-9xl">
-              GTI <span className="text-violet-500">CLICK</span>
+            <h1 className="mt-6 text-[3.35rem] leading-[0.92] font-black tracking-[-0.065em] text-white sm:text-7xl lg:text-[5.6rem]">
+              A galera registra.
+              <span className="text-gradient block">O GTI guarda.</span>
             </h1>
 
-            <p className="mt-7 max-w-lg text-lg leading-relaxed text-slate-300 sm:text-xl">
-              Os melhores momentos da galera, em um só lugar.
+            <p className="mt-7 max-w-xl text-base leading-relaxed text-slate-300 sm:text-lg">
+              Seus melhores clicks, reunidos em um álbum privado feito para viver e reviver cada momento do evento.
             </p>
 
-            <Link
-              href="/evento/entrar"
-              className="mt-9 inline-flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl bg-violet-600 px-7 text-base font-bold text-white shadow-[0_16px_45px_rgba(124,58,237,0.25)] transition hover:bg-violet-500 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet-400 sm:w-auto"
-            >
-              Entrar no evento
-              <span aria-hidden="true">→</span>
-            </Link>
-          </div>
-        </div>
-      </section>
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Link href="/evento/entrar" className="gradient-button w-full sm:w-auto">
+                Entrar no evento
+                <ArrowRightIcon className="size-5" />
+              </Link>
+              <span className="flex items-center justify-center gap-2 px-3 text-xs text-slate-500 sm:justify-start">
+                <ShieldIcon className="size-4 text-violet-300" />
+                Acesso privado por evento
+              </span>
+            </div>
 
-      <footer className="relative z-10 border-t border-white/10 pt-5 text-sm text-slate-400">
-        <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-7">
-          <a className="transition hover:text-white" href="https://galeradoti.com">
-            GALERADOTI.com
-          </a>
-          <a
-            className="transition hover:text-white"
-            href="https://instagram.com/galera.do.ti"
-          >
-            @galera.do.ti
-          </a>
-          <a
-            className="break-all transition hover:text-white"
-            href="mailto:administracao@galeradoti.com"
-          >
-            administracao@galeradoti.com
-          </a>
-        </div>
-      </footer>
-    </main>
+            <div className="mt-11 grid max-w-lg grid-cols-3 gap-3 border-t border-white/8 pt-6">
+              <HomeFeature icon={<CameraIcon className="size-4" />} label="Registre" />
+              <HomeFeature icon={<ImageIcon className="size-4" />} label="Compartilhe" />
+              <HomeFeature icon={<SparklesIcon className="size-4" />} label="Reviva" />
+            </div>
+          </div>
+
+          <div className="relative mx-auto w-full max-w-[34rem] lg:mx-0 lg:ml-auto">
+            <div className="absolute -inset-10 -z-10 rounded-full bg-violet-600/15 blur-3xl" aria-hidden="true" />
+            <div className="glass-panel relative overflow-hidden rounded-[2.25rem] p-3 sm:p-4">
+              <div className="absolute -top-3 left-8 rounded-full border border-fuchsia-300/20 bg-[#120a24] px-3 py-1 text-[0.62rem] font-black tracking-[0.14em] text-fuchsia-200 uppercase shadow-lg">
+                Experiência ao vivo
+              </div>
+              <Image
+                src="/assets/gti-click/banner.jpg"
+                alt="GTI CLICK — A galera registra. O GTI guarda."
+                width={1536}
+                height={614}
+                priority
+                sizes="(max-width: 1024px) 100vw, 34rem"
+                className="mt-1 w-full rounded-[1.4rem] object-contain"
+              />
+              <div className="relative mt-3 min-h-[20rem] overflow-hidden rounded-[1.4rem] border border-violet-300/10 bg-[radial-gradient(circle_at_25%_30%,rgba(217,70,239,.18),transparent_35%),linear-gradient(145deg,#120b22,#080711)] sm:min-h-[23rem]">
+                <Image
+                  src="/assets/gti-click/mascot-phone-seated.jpg"
+                  alt="Mascote GTI CLICK segurando um celular"
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 62vw, 21rem"
+                  className="object-contain object-left-bottom mix-blend-screen"
+                />
+                <div className="absolute right-3 bottom-3 w-[48%] rounded-2xl border border-white/10 bg-[#0a0814]/88 p-4 shadow-2xl backdrop-blur sm:right-5 sm:bottom-5">
+                  <p className="text-[0.62rem] font-black tracking-[0.12em] text-fuchsia-200 uppercase">Próximo evento</p>
+                  <p className="mt-2 text-sm font-black leading-tight text-white sm:text-base">{event.nome}</p>
+                  <p className="mt-3 text-[0.65rem] leading-relaxed text-slate-400">{event.data}<br />{event.local}</p>
+                  <Link href="/evento/entrar" className="mt-4 inline-flex items-center gap-1.5 text-[0.7rem] font-black text-violet-300">
+                    Entrar <ArrowRightIcon className="size-3.5" />
+                  </Link>
+                </div>
+              </div>
+              <div className="mt-3 flex items-center justify-between rounded-2xl border border-white/8 bg-white/[0.035] px-4 py-3">
+                <div>
+                  <p className="text-xs font-bold text-white">Memórias da galera</p>
+                  <p className="mt-1 text-[0.65rem] text-slate-500">Fotos aprovadas pela equipe GTI</p>
+                </div>
+                <span className="grid size-9 place-items-center rounded-xl bg-violet-500/15 text-violet-200">
+                  <ImageIcon className="size-4" />
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <footer className="border-t border-white/8 py-5 text-xs text-slate-500">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+            <p>© GTI CLICK · Feito para a comunidade Galera do TI</p>
+            <div className="flex flex-wrap gap-x-5 gap-y-2">
+              <a className="transition hover:text-white" href="https://galeradoti.com">GALERADOTI.com</a>
+              <a className="transition hover:text-white" href="https://instagram.com/galera.do.ti">@galera.do.ti</a>
+              <a className="transition hover:text-white" href="mailto:administracao@galeradoti.com">Contato</a>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </AppShell>
+  );
+}
+
+function HomeFeature({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
+      <span className="grid size-7 place-items-center rounded-lg bg-violet-400/10 text-violet-200">{icon}</span>
+      {label}
+    </div>
   );
 }

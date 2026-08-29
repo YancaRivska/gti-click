@@ -2,6 +2,10 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(request: NextRequest) {
+  if (request.nextUrl.pathname === "/evento/entrar") {
+    return NextResponse.next({ request });
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -36,8 +40,7 @@ export async function updateSession(request: NextRequest) {
 
   if (
     !claims &&
-    request.nextUrl.pathname.startsWith("/evento") &&
-    request.nextUrl.pathname !== "/evento/entrar"
+    request.nextUrl.pathname.startsWith("/evento")
   ) {
     return NextResponse.redirect(new URL("/evento/entrar", request.url));
   }

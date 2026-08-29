@@ -1,3 +1,45 @@
+-- GTI CLICK: atualização idempotente para instalações existentes.
+-- Execute no SQL Editor do Supabase com uma conta administrativa.
+
+alter table public.photo_uploads
+  add column if not exists instagram_handle text,
+  add column if not exists moderation_status text;
+
+update public.photo_uploads
+set moderation_status = 'approved'
+where moderation_status is null;
+
+alter table public.photo_uploads
+  alter column moderation_status set default 'pending',
+  alter column moderation_status set not null;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'photo_uploads_moderation_status_check'
+      and conrelid = 'public.photo_uploads'::regclass
+  ) then
+    alter table public.photo_uploads
+      add constraint photo_uploads_moderation_status_check
+      check (moderation_status in ('pending', 'approved', 'rejected'));
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'photo_uploads_instagram_handle_length'
+      and conrelid = 'public.photo_uploads'::regclass
+  ) then
+    alter table public.photo_uploads
+      add constraint photo_uploads_instagram_handle_length
+      check (
+        instagram_handle is null
+        or char_length(instagram_handle) <= 50
+      );
+  end if;
+end
+$$;
+
 insert into storage.buckets (
   id,
   name,
@@ -12,33 +54,13 @@ values (
   10485760,
   array['image/jpeg', 'image/png', 'image/webp']
 )
-on conflict (id) do update
-set
-  public = false,
+on conflict (id) do update set
+  public = excluded.public,
   file_size_limit = excluded.file_size_limit,
   allowed_mime_types = excluded.allowed_mime_types;
 
-create table if not exists public.photo_uploads (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users(id) on delete cascade,
-  event_id text not null,
-  storage_path text not null unique,
-  caption text check (caption is null or char_length(caption) <= 500),
-  instagram_handle text check (
-    instagram_handle is null
-    or char_length(instagram_handle) <= 50
-  ),
-  moderation_status text not null default 'pending' check (
-    moderation_status in ('pending', 'approved', 'rejected')
-  ),
-  created_at timestamptz not null default now()
-);
-
-alter table public.photo_uploads enable row level security;
-
 revoke all on table public.photo_uploads from anon, authenticated;
-grant select on table public.photo_uploads to authenticated;
-grant delete on table public.photo_uploads to authenticated;
+grant select, delete on table public.photo_uploads to authenticated;
 grant insert (
   user_id,
   event_id,
@@ -103,9 +125,9 @@ create policy "Users can delete their own photos"
     )
   );
 
-drop policy if exists "Consenting users can upload their own event photos"
+drop policy if exists "Users can upload their own event photos"
   on storage.objects;
-create policy "Consenting users can upload their own event photos"
+create policy "Users can upload their own event photos"
   on storage.objects
   for insert
   to authenticated
@@ -113,7 +135,7 @@ create policy "Consenting users can upload their own event photos"
     bucket_id = 'event-photos'
     and (storage.foldername(name))[1] = 'aws-summit-sp-2026'
     and (storage.foldername(name))[2] = (select auth.uid())::text
-    and lower(storage.extension(name)) = any (array['jpg', 'png', 'webp'])
+    and lower(storage.extension(name)) in ('jpg', 'jpeg', 'png', 'webp')
     and exists (
       select 1
       from public.event_consents consent

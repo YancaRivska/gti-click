@@ -1,0 +1,324 @@
+import Image from "next/image";
+import Link from "next/link";
+import type { ReactNode, SVGProps } from "react";
+
+type IconProps = SVGProps<SVGSVGElement>;
+
+function IconBase({ children, ...props }: IconProps & { children: ReactNode }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      {children}
+    </svg>
+  );
+}
+
+export function CameraIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.2l1.1-1.5h6.4L16.3 6h1.2A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5v-8Z" />
+      <circle cx="12" cy="12.5" r="3.5" />
+      <path d="M17.5 9.5h.01" />
+    </IconBase>
+  );
+}
+
+export function ApertureIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="m9.2 3.5 5 8.5M20.7 8H11m7.1 10-5-8.5M9.8 20.5 15 12M3.3 16H13M5.9 6l5 8.5" />
+    </IconBase>
+  );
+}
+
+export function ArrowRightIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M5 12h14M14 7l5 5-5 5" />
+    </IconBase>
+  );
+}
+
+export function ArrowLeftIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M19 12H5m5 5-5-5 5-5" />
+    </IconBase>
+  );
+}
+
+export function UploadIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M12 16V4m-4 4 4-4 4 4" />
+      <path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" />
+    </IconBase>
+  );
+}
+
+export function ImageIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <circle cx="8.5" cy="9" r="1.5" />
+      <path d="m5 17 4.5-4.5 3 3 2-2 4.5 3.5" />
+    </IconBase>
+  );
+}
+
+export function CalendarIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M16 3v4M8 3v4M3 10h18" />
+    </IconBase>
+  );
+}
+
+export function MapPinIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </IconBase>
+  );
+}
+
+export function ShieldIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M12 3 5 6v5c0 4.6 2.9 8.1 7 10 4.1-1.9 7-5.4 7-10V6l-7-3Z" />
+      <path d="m9 12 2 2 4-4" />
+    </IconBase>
+  );
+}
+
+export function SparklesIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="m12 3 1.2 3.3L16.5 7.5l-3.3 1.2L12 12l-1.2-3.3-3.3-1.2 3.3-1.2L12 3Z" />
+      <path d="m18 14 .8 2.2L21 17l-2.2.8L18 20l-.8-2.2L15 17l2.2-.8L18 14Z" />
+      <path d="m5 13 .6 1.4L7 15l-1.4.6L5 17l-.6-1.4L3 15l1.4-.6L5 13Z" />
+    </IconBase>
+  );
+}
+
+export function CheckIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="m5 12 4 4L19 6" />
+    </IconBase>
+  );
+}
+
+export function DownloadIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M12 4v11m-4-4 4 4 4-4M5 20h14" />
+    </IconBase>
+  );
+}
+
+export function ShareIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <circle cx="18" cy="5" r="2.5" />
+      <circle cx="6" cy="12" r="2.5" />
+      <circle cx="18" cy="19" r="2.5" />
+      <path d="m8.2 10.8 7.6-4.5m-7.6 6.9 7.6 4.5" />
+    </IconBase>
+  );
+}
+
+export function FlagIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M5 21V4m0 1h11l-2 4 2 4H5" />
+    </IconBase>
+  );
+}
+
+export function TrashIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M4 7h16M9 7V4h6v3m3 0-1 14H7L6 7m4 4v6m4-6v6" />
+    </IconBase>
+  );
+}
+
+export function LockIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <rect x="5" y="10" width="14" height="11" rx="2" />
+      <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+    </IconBase>
+  );
+}
+
+export function UsersIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <circle cx="9" cy="8" r="3" />
+      <path d="M3.5 19v-1.5A4.5 4.5 0 0 1 8 13h2a4.5 4.5 0 0 1 4.5 4.5V19" />
+      <path d="M15.5 5.5a3 3 0 0 1 0 5.5M17 13a4.5 4.5 0 0 1 3.5 4.4V19" />
+    </IconBase>
+  );
+}
+
+export function GtiLogo({ href = "/", compact = false }: { href?: string; compact?: boolean }) {
+  const content = (
+    <Image
+      src="/assets/gti-click/logo-primary.jpg"
+      alt="GTI CLICK — A galera registra. O GTI guarda."
+      width={1229}
+      height={1536}
+      priority
+      className={`${compact ? "h-11" : "h-14"} w-auto object-contain mix-blend-screen`}
+    />
+  );
+
+  return href ? (
+    <Link href={href} className="inline-flex items-center" aria-label="GTI CLICK — início">
+      {content}
+    </Link>
+  ) : (
+    <div className="inline-flex items-center gap-3">{content}</div>
+  );
+}
+
+export function AppShell({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <main className={`app-shell relative min-h-svh overflow-hidden ${className}`}>
+      <div className="app-glow app-glow-one" aria-hidden="true" />
+      <div className="app-glow app-glow-two" aria-hidden="true" />
+      <div className="relative z-10 min-h-svh">{children}</div>
+    </main>
+  );
+}
+
+export function BackLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link href={href} className="back-link">
+      <ArrowLeftIcon className="size-4" />
+      <span>{children}</span>
+    </Link>
+  );
+}
+
+export function EventArtwork({
+  name,
+  date,
+  location,
+  compact = false,
+}: {
+  name: string;
+  date: string;
+  location: string;
+  compact?: boolean;
+}) {
+  return (
+    <div className={`event-artwork ${compact ? "event-artwork-compact" : ""}`}>
+      <div className="event-artwork-grid" aria-hidden="true" />
+      <div className="event-artwork-orbit" aria-hidden="true">
+        <Image
+          src="/assets/gti-click/mascot-camera.jpg"
+          alt=""
+          fill
+          sizes="(max-width: 640px) 48vw, 22rem"
+          className="object-contain object-bottom mix-blend-screen"
+        />
+      </div>
+      <div className="relative z-10 flex h-full flex-col justify-between">
+        <div className="flex items-center justify-between">
+          <span className="event-badge">Evento ativo</span>
+          <CameraIcon className="size-5 text-violet-200" />
+        </div>
+        <div>
+          <p className="text-xs font-bold tracking-[0.18em] text-fuchsia-200 uppercase">
+            Galera do TI apresenta
+          </p>
+          <h2 className={`${compact ? "mt-2 text-xl" : "mt-3 text-3xl sm:text-4xl"} max-w-[64%] font-black leading-[0.95] tracking-[-0.04em] text-white uppercase`}>
+            {name}
+          </h2>
+          <div className="mt-4 flex max-w-[62%] flex-wrap gap-2 text-xs font-semibold text-slate-300">
+            <span>{date}</span>
+            <span className="text-violet-400">•</span>
+            <span>{location}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function EmptyState({
+  icon,
+  visual,
+  title,
+  description,
+  children,
+}: {
+  icon: ReactNode;
+  visual?: ReactNode;
+  title: string;
+  description: string;
+  children?: ReactNode;
+}) {
+  return (
+    <div className="empty-state">
+      {visual ? (
+        <div className="relative mx-auto h-32 w-32 overflow-hidden">{visual}</div>
+      ) : (
+        <span className="mx-auto grid size-14 place-items-center rounded-2xl border border-violet-300/20 bg-violet-400/10 text-violet-200">
+          {icon}
+        </span>
+      )}
+      <h2 className="mt-5 text-xl font-black tracking-tight text-white">{title}</h2>
+      <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-slate-400">{description}</p>
+      {children}
+    </div>
+  );
+}
+
+export function MobileEventNav({
+  eventSlug,
+  active,
+}: {
+  eventSlug: string;
+  active: "gallery" | "upload" | "event";
+}) {
+  const items = [
+    { key: "gallery", label: "Galeria", href: `/evento/${eventSlug}/galeria`, icon: <ImageIcon className="size-5" /> },
+    { key: "upload", label: "Enviar", href: `/evento/${eventSlug}/enviar`, icon: <CameraIcon className="size-5" /> },
+    { key: "event", label: "Evento", href: `/evento/${eventSlug}`, icon: <ApertureIcon className="size-5" /> },
+  ] as const;
+
+  return (
+    <nav aria-label="Navegação do evento" className="fixed right-4 bottom-4 left-4 z-40 mx-auto grid max-w-sm grid-cols-3 rounded-2xl border border-white/10 bg-[#0a0814]/95 p-1.5 shadow-[0_18px_60px_rgba(0,0,0,.55)] backdrop-blur-xl lg:hidden">
+      {items.map((item) => {
+        const isActive = active === item.key;
+        return (
+          <Link key={item.key} href={item.href} aria-current={isActive ? "page" : undefined} className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl text-[0.65rem] font-bold transition ${isActive ? "bg-violet-500/16 text-violet-200" : "text-slate-600 hover:text-white"}`}>
+            {item.icon}
+            {item.label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}

@@ -1,58 +1,32 @@
 import Image from "next/image";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
-import { getEventBySlug } from "@/data/events";
-import { hasEventConsent } from "@/lib/consent";
-import { createClient } from "@/lib/supabase/server";
+import {
+  AppShell,
+  BackLink,
+  CameraIcon,
+  DownloadIcon,
+  EmptyState,
+  GtiLogo,
+  ImageIcon,
+  MobileEventNav,
+  ShieldIcon,
+} from "@/components/gti-ui";
+import { requireEventAccess } from "@/lib/event-access";
 
 const BUCKET = "event-photos";
 const SIGNED_URL_DURATION = 60 * 10;
 const DOWNLOAD_URL_DURATION = 60 * 5;
 
-function GalleryMessage({
-  children,
-  eventSlug,
-}: {
-  children: React.ReactNode;
-  eventSlug: string;
-}) {
-  return (
-    <div className="mt-10 rounded-3xl border border-white/10 bg-white/5 px-6 py-12 text-center text-slate-300">
-      {children}
-      <Link
-        href={`/evento/${eventSlug}`}
-        className="mt-6 inline-flex min-h-12 items-center justify-center rounded-xl border border-white/15 px-5 font-semibold text-white transition hover:bg-white/5"
-      >
-        Voltar ao evento
-      </Link>
-    </div>
-  );
-}
-
 export default async function GalleryPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ deleted?: string | string[] }>;
 }) {
   const { slug } = await params;
-  const event = getEventBySlug(slug);
-
-  if (!event) {
-    notFound();
-  }
-
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/evento/entrar");
-  }
-
-  if (!(await hasEventConsent(supabase, user.id, event.id))) {
-    redirect(`/evento/${event.slug}/aceite`);
-  }
+  const { event, supabase } = await requireEventAccess(slug);
+  const query = await searchParams;
 
   const { data: photos, error: photosError } = await supabase
     .from("photo_uploads")
@@ -64,22 +38,19 @@ export default async function GalleryPage({
   if (photosError) {
     return (
       <GalleryShell eventName={event.nome} eventSlug={event.slug}>
-        <GalleryMessage eventSlug={event.slug}>
-          <p className="font-semibold text-white">A galeria não carregou.</p>
-          <p className="mt-2 text-sm">Tente novamente em alguns instantes.</p>
-        </GalleryMessage>
+        <EmptyState icon={<ImageIcon className="size-6" />} visual={<Image src="/assets/gti-click/error-camera.jpg" alt="Câmera com alerta" fill sizes="8rem" className="object-contain mix-blend-screen" />} title="Não conseguimos carregar a galeria" description="Tente novamente em alguns instantes. Seus clicks continuam protegidos.">
+          <Link href={`/evento/${event.slug}`} className="secondary-button mt-6">Voltar ao evento</Link>
+        </EmptyState>
       </GalleryShell>
     );
   }
 
   if (!photos.length) {
     return (
-      <GalleryShell eventName={event.nome} eventSlug={event.slug}>
-        <GalleryMessage eventSlug={event.slug}>
-          <p className="text-3xl" aria-hidden="true">📷</p>
-          <p className="mt-3 font-semibold text-white">Ainda não tem foto por aqui.</p>
-          <p className="mt-2 text-sm">Que tal publicar o primeiro click?</p>
-        </GalleryMessage>
+      <GalleryShell eventName={event.nome} eventSlug={event.slug} photoCount={0}>
+        <EmptyState icon={<CameraIcon className="size-6" />} visual={<Image src="/assets/gti-click/mascot-camera.jpg" alt="Mascote GTI CLICK com câmera" fill sizes="8rem" className="object-contain mix-blend-screen" />} title="Nenhuma foto aprovada ainda" description="Que tal publicar um click e começar o álbum da galera?">
+          <Link href={`/evento/${event.slug}/enviar`} className="gradient-button mt-6">Enviar uma foto</Link>
+        </EmptyState>
       </GalleryShell>
     );
   }
@@ -87,91 +58,77 @@ export default async function GalleryPage({
   const paths = photos.map((photo) => photo.storage_path);
   const [signedResult, downloadResult] = await Promise.all([
     supabase.storage.from(BUCKET).createSignedUrls(paths, SIGNED_URL_DURATION),
-    supabase.storage
-      .from(BUCKET)
-      .createSignedUrls(paths, DOWNLOAD_URL_DURATION, { download: true }),
+    supabase.storage.from(BUCKET).createSignedUrls(paths, DOWNLOAD_URL_DURATION, { download: true }),
   ]);
 
   if (signedResult.error || downloadResult.error) {
     return (
       <GalleryShell eventName={event.nome} eventSlug={event.slug}>
-        <GalleryMessage eventSlug={event.slug}>
-          <p className="font-semibold text-white">As fotos não puderam ser abertas.</p>
-          <p className="mt-2 text-sm">Tente atualizar a página daqui a pouco.</p>
-        </GalleryMessage>
+        <EmptyState icon={<ShieldIcon className="size-6" />} visual={<Image src="/assets/gti-click/error-camera.jpg" alt="Câmera com alerta" fill sizes="8rem" className="object-contain mix-blend-screen" />} title="Não conseguimos carregar a galeria" description="Os links privados não ficaram disponíveis agora. Tente atualizar a página daqui a pouco.">
+          <Link href={`/evento/${event.slug}`} className="secondary-button mt-6">Voltar ao evento</Link>
+        </EmptyState>
       </GalleryShell>
     );
   }
 
-  const signedUrls = new Map(
-    signedResult.data.map((photo) => [photo.path, photo.signedUrl]),
-  );
-  const downloadUrls = new Map(
-    downloadResult.data.map((photo) => [photo.path, photo.signedUrl]),
-  );
+  const signedUrls = new Map(signedResult.data.map((photo) => [photo.path, photo.signedUrl]));
+  const downloadUrls = new Map(downloadResult.data.map((photo) => [photo.path, photo.signedUrl]));
   const visiblePhotos = photos.flatMap((photo) => {
     const signedUrl = signedUrls.get(photo.storage_path);
     const downloadUrl = downloadUrls.get(photo.storage_path);
-    return signedUrl && downloadUrl
-      ? [{ ...photo, signedUrl, downloadUrl }]
-      : [];
+    return signedUrl && downloadUrl ? [{ ...photo, signedUrl, downloadUrl }] : [];
   });
 
   if (!visiblePhotos.length) {
     return (
       <GalleryShell eventName={event.nome} eventSlug={event.slug}>
-        <GalleryMessage eventSlug={event.slug}>
-          <p className="font-semibold text-white">As fotos estão indisponíveis agora.</p>
-          <p className="mt-2 text-sm">Tente novamente em alguns instantes.</p>
-        </GalleryMessage>
+        <EmptyState icon={<ImageIcon className="size-6" />} visual={<Image src="/assets/gti-click/error-camera.jpg" alt="Câmera com alerta" fill sizes="8rem" className="object-contain mix-blend-screen" />} title="Fotos indisponíveis agora" description="Tente novamente em alguns instantes. O acesso ao bucket permanece privado." />
       </GalleryShell>
     );
   }
 
   const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
-    dateStyle: "medium",
-    timeStyle: "short",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
     timeZone: "America/Sao_Paulo",
   });
 
   return (
-    <GalleryShell eventName={event.nome} eventSlug={event.slug}>
-      <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {visiblePhotos.map((photo) => (
-          <article
-            key={photo.id}
-            className="overflow-hidden rounded-2xl border border-white/10 bg-[#0b0d1a]/95 shadow-xl"
-          >
-            <Image
-              src={photo.signedUrl}
-              alt={photo.caption || "Foto do evento"}
-              width={900}
-              height={900}
-              unoptimized
-              className="aspect-square w-full object-cover"
-            />
-            <div className="p-4">
-              {photo.caption && (
-                <p className="leading-relaxed text-white">{photo.caption}</p>
-              )}
-              {photo.instagram_handle && (
-                <p className="mt-2 text-sm font-semibold text-violet-300">
-                  {photo.instagram_handle}
-                </p>
-              )}
-              <time
-                dateTime={photo.created_at}
-                className="mt-2 block text-xs text-slate-500"
-              >
-                {dateFormatter.format(new Date(photo.created_at))}
-              </time>
-              <a
-                href={photo.downloadUrl}
-                download
-                className="mt-4 inline-flex min-h-10 items-center justify-center rounded-xl border border-violet-400/30 px-4 text-sm font-semibold text-violet-200 transition hover:bg-violet-400/10"
-              >
-                Baixar foto
-              </a>
+    <GalleryShell eventName={event.nome} eventSlug={event.slug} photoCount={visiblePhotos.length}>
+      {query.deleted === "1" && (
+        <p role="status" className="mt-6 rounded-xl border border-emerald-300/15 bg-emerald-400/[0.07] px-4 py-3 text-sm text-emerald-100">
+          Foto excluída com sucesso.
+        </p>
+      )}
+      <div className="mt-7 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
+        {visiblePhotos.map((photo, index) => (
+          <article key={photo.id} className="photo-card group">
+            <Link href={`/evento/${event.slug}/galeria/${photo.id}`} className="relative block overflow-hidden bg-[#0b0915]">
+              <Image
+                src={photo.signedUrl}
+                alt={photo.caption || "Foto do evento"}
+                width={900}
+                height={900}
+                unoptimized
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                className={`${index % 5 === 0 ? "aspect-[4/5]" : "aspect-square"} w-full object-cover transition duration-300 group-hover:scale-[1.025]`}
+              />
+              <span className="absolute right-3 bottom-3 rounded-full border border-white/10 bg-black/55 px-2.5 py-1 text-[0.62rem] font-bold text-white/85 opacity-0 backdrop-blur transition group-hover:opacity-100">
+                Ver foto
+              </span>
+            </Link>
+            <div className="p-3 sm:p-4">
+              {photo.instagram_handle && <p className="truncate text-xs font-black text-violet-300 sm:text-sm">{photo.instagram_handle}</p>}
+              {photo.caption && <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-slate-300 sm:text-sm">{photo.caption}</p>}
+              <div className="mt-3 flex items-center justify-between gap-2 border-t border-white/7 pt-3">
+                <time dateTime={photo.created_at} className="truncate text-[0.62rem] text-slate-600 sm:text-xs">
+                  {dateFormatter.format(new Date(photo.created_at))}
+                </time>
+                <a href={photo.downloadUrl} download aria-label="Baixar foto" className="grid size-8 shrink-0 place-items-center rounded-lg border border-violet-300/15 bg-violet-400/[0.07] text-violet-200 transition hover:bg-violet-400/15">
+                  <DownloadIcon className="size-4" />
+                </a>
+              </div>
             </div>
           </article>
         ))}
@@ -184,37 +141,49 @@ function GalleryShell({
   children,
   eventName,
   eventSlug,
+  photoCount,
 }: {
   children: React.ReactNode;
   eventName: string;
   eventSlug: string;
+  photoCount?: number;
 }) {
   return (
-    <main className="home-shell relative min-h-svh overflow-hidden px-5 py-10">
-      <div className="lens" aria-hidden="true" />
-      <section className="relative z-10 mx-auto w-full max-w-6xl">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <Link
-              href={`/evento/${eventSlug}`}
-              className="text-xs font-bold tracking-[0.18em] text-violet-300"
-            >
-              ← {eventName}
+    <AppShell>
+      <div className="mx-auto min-h-svh w-full max-w-7xl px-4 py-5 pb-28 sm:px-8 sm:py-7 lg:px-10 lg:pb-0">
+        <header className="flex items-center justify-between border-b border-white/8 pb-5">
+          <GtiLogo />
+          <span className="flex items-center gap-2 text-[0.65rem] font-bold text-slate-500 sm:text-xs">
+            <ShieldIcon className="size-4 text-violet-300" />
+            Galeria privada
+          </span>
+        </header>
+
+        <section className="py-8 sm:py-11">
+          <BackLink href={`/evento/${eventSlug}`}>{eventName}</BackLink>
+          <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <span className="eyebrow"><span className="eyebrow-dot" />Memórias aprovadas</span>
+              <h1 className="mt-4 text-4xl font-black tracking-[-0.05em] text-white sm:text-6xl">Galeria da <span className="text-gradient">galera</span></h1>
+              <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-400 sm:text-base">Os clicks mais recentes aparecem primeiro. Toque em uma foto para ver os detalhes.</p>
+            </div>
+            <Link href={`/evento/${eventSlug}/enviar`} className="gradient-button hidden w-full sm:inline-flex sm:w-auto">
+              <CameraIcon className="size-5" />
+              Enviar foto
             </Link>
-            <h1 className="mt-5 text-3xl font-black tracking-tight text-white sm:text-5xl">
-              Galeria da galera
-            </h1>
-            <p className="mt-3 text-slate-300">Os clicks mais recentes aparecem primeiro.</p>
           </div>
-          <Link
-            href={`/evento/${eventSlug}/enviar`}
-            className="inline-flex min-h-12 items-center justify-center rounded-xl bg-violet-600 px-5 font-semibold text-white transition hover:bg-violet-500"
-          >
-            Enviar foto
-          </Link>
-        </div>
-        {children}
-      </section>
-    </main>
+
+          <div className="mt-7 flex items-center gap-2 border-b border-white/8 pb-4">
+            <span className="rounded-full border border-violet-300/25 bg-violet-400/10 px-4 py-2 text-xs font-black text-violet-100">Todos</span>
+            {typeof photoCount === "number" && <span className="text-xs text-slate-600">{photoCount} {photoCount === 1 ? "foto" : "fotos"}</span>}
+          </div>
+          {children}
+        </section>
+        <Link href={`/evento/${eventSlug}/enviar`} aria-label="Enviar foto" className="gradient-button fixed right-5 bottom-24 z-30 size-14 rounded-full p-0 shadow-[0_14px_40px_rgba(124,58,237,.45)] sm:hidden">
+          <CameraIcon className="size-6" />
+        </Link>
+        <MobileEventNav eventSlug={eventSlug} active="gallery" />
+      </div>
+    </AppShell>
   );
 }

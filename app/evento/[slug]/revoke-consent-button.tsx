@@ -19,7 +19,7 @@ export function RevokeConsentButton({ eventSlug }: { eventSlug: string }) {
       <input type="hidden" name="eventSlug" value={eventSlug} />
       <button
         type="submit"
-        className="min-h-12 rounded-xl px-5 font-semibold text-red-300 transition hover:bg-red-400/10 hover:text-red-200"
+        className="rounded-xl px-3 py-2 text-sm font-semibold text-red-300/70 transition hover:bg-red-400/8 hover:text-red-200"
       >
         Revogar consentimento
       </button>

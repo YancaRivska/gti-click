@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { getEventBySlug } from "@/data/events";
-import { hasAdminSession } from "@/lib/admin-auth";
+import { clearAdminSession, hasAdminSession } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const EVENT_SLUG = "aws-summit-sp-2026";
@@ -26,14 +26,20 @@ async function getAuthorizedPhoto(formData: FormData) {
 export async function approvePendingPhoto(formData: FormData) {
   const { event, photoId } = await getAuthorizedPhoto(formData);
   const admin = createAdminClient();
-  const { error } = await admin
+  const { data, error } = await admin
     .from("photo_uploads")
     .update({ moderation_status: "approved" })
     .eq("id", photoId)
     .eq("event_id", event.id)
-    .eq("moderation_status", "pending");
+    .eq("moderation_status", "pending")
+    .select("id")
+    .maybeSingle();
 
-  redirect(error ? "/admin/moderacao?error=approve" : "/admin/moderacao");
+  redirect(
+    error || !data
+      ? "/admin/moderacao?error=approve"
+      : "/admin/moderacao",
+  );
 }
 
 export async function deletePendingPhoto(formData: FormData) {
@@ -59,12 +65,23 @@ export async function deletePendingPhoto(formData: FormData) {
     redirect("/admin/moderacao?error=delete");
   }
 
-  const { error: recordError } = await admin
+  const { data: deletedRecord, error: recordError } = await admin
     .from("photo_uploads")
     .delete()
     .eq("id", photoId)
     .eq("event_id", event.id)
-    .eq("moderation_status", "pending");
+    .eq("moderation_status", "pending")
+    .select("id")
+    .maybeSingle();
 
-  redirect(recordError ? "/admin/moderacao?error=delete" : "/admin/moderacao");
+  redirect(
+    recordError || !deletedRecord
+      ? "/admin/moderacao?error=delete"
+      : "/admin/moderacao",
+  );
+}
+
+export async function logoutAdmin() {
+  await clearAdminSession();
+  redirect("/evento/entrar");
 }

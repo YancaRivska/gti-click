@@ -2,14 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CheckIcon, DownloadIcon } from "@/components/gti-ui";
+import {
+  canSharePhotoFile,
+  fetchWatermarkedPhoto,
+  isAppleMobileDevice,
+  triggerPhotoDownload,
+} from "@/lib/client/watermarked-photo";
 
 type DownloadStatus = "idle" | "loading" | "success" | "error";
-
-function getDownloadName(response: Response, fallback: string) {
-  const disposition = response.headers.get("Content-Disposition");
-  const match = disposition?.match(/filename="?([^";]+)"?/i);
-  return match?.[1] || fallback;
-}
 
 export function WatermarkedDownloadButton({
   eventSlug,
@@ -22,14 +22,10 @@ export function WatermarkedDownloadButton({
 }) {
   const [status, setStatus] = useState<DownloadStatus>("idle");
   const [message, setMessage] = useState("");
-  const objectUrlRef = useRef<string | null>(null);
   const resetTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     return () => {
-      if (objectUrlRef.current) {
-        URL.revokeObjectURL(objectUrlRef.current);
-      }
       if (resetTimerRef.current) {
         window.clearTimeout(resetTimerRef.current);
       }
@@ -55,48 +51,32 @@ export function WatermarkedDownloadButton({
     setMessage("Preparando sua foto com a marca d’água...");
 
     try {
-      const response = await fetch(
-        `/api/evento/${encodeURIComponent(eventSlug)}/fotos/${encodeURIComponent(photoId)}/download`,
-        { method: "GET", credentials: "same-origin", cache: "no-store" },
-      );
+      const photo = await fetchWatermarkedPhoto(eventSlug, photoId);
 
-      if (!response.ok) {
-        const body = await response.json().catch(() => null) as { error?: string } | null;
-        throw new Error(body?.error || "Não foi possível baixar esta foto.");
+      if (isAppleMobileDevice() && canSharePhotoFile(photo.file)) {
+        setMessage("No menu do iPhone, toque em “Salvar Imagem”.");
+        await navigator.share({
+          files: [photo.file],
+          title: "GTI CLICK",
+        });
+      } else {
+        triggerPhotoDownload(photo.blob, photo.fileName);
       }
-
-      const blob = await response.blob();
-      if (!blob.type.startsWith("image/")) {
-        throw new Error("O arquivo gerado não é uma foto válida.");
-      }
-
-      if (objectUrlRef.current) {
-        URL.revokeObjectURL(objectUrlRef.current);
-      }
-
-      const objectUrl = URL.createObjectURL(blob);
-      objectUrlRef.current = objectUrl;
-      const anchor = document.createElement("a");
-      anchor.href = objectUrl;
-      anchor.download = getDownloadName(
-        response,
-        `gti-click-${eventSlug}-${photoId}.jpg`,
-      );
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-
-      window.setTimeout(() => {
-        if (objectUrlRef.current === objectUrl) {
-          URL.revokeObjectURL(objectUrl);
-          objectUrlRef.current = null;
-        }
-      }, 1500);
 
       setStatus("success");
-      setMessage("Foto com marca d’água pronta!");
+      setMessage(
+        isAppleMobileDevice()
+          ? "Use “Salvar Imagem” para guardar no aplicativo Fotos."
+          : "Foto com marca d’água pronta!",
+      );
       scheduleReset();
     } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        setStatus("idle");
+        setMessage("");
+        return;
+      }
+
       setStatus("error");
       setMessage(
         error instanceof Error

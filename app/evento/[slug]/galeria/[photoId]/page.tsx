@@ -117,7 +117,7 @@ export default async function PhotoDetailPage({
               enabled={likesEnabled}
             />
             <WatermarkedDownloadButton eventSlug={event.slug} photoId={photo.id} />
-            <SharePhotoButton />
+            <SharePhotoButton eventSlug={event.slug} photoId={photo.id} />
             <DeleteOwnPhotoButton
               eventSlug={event.slug}
               photoId={photo.id}

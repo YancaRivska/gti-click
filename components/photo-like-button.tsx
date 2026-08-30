@@ -1,24 +1,25 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { HeartIcon } from "@/components/gti-ui";
-import { togglePhotoLike } from "@/app/evento/[slug]/galeria/like-actions";
+import { createClient } from "@/lib/supabase/browser";
 
 export function PhotoLikeButton({
-  eventSlug,
   photoId,
   initialLiked,
   initialCount,
   variant = "detail",
   enabled = true,
 }: {
-  eventSlug: string;
   photoId: string;
   initialLiked: boolean;
   initialCount: number;
   variant?: "card" | "detail";
   enabled?: boolean;
 }) {
+  const router = useRouter();
+  const supabase = useMemo(() => createClient(), []);
   const [liked, setLiked] = useState(initialLiked);
   const [count, setCount] = useState(initialCount);
   const [message, setMessage] = useState("");
@@ -47,18 +48,46 @@ export function PhotoLikeButton({
     setMessage("");
 
     startTransition(async () => {
-      const result = await togglePhotoLike(eventSlug, photoId);
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
 
-      if (!result.ok) {
+      if (userError || !user) {
         setLiked(previousLiked);
         setCount(previousCount);
-        setMessage(result.message);
+        setMessage("Entre novamente no evento para curtir.");
         return;
       }
 
-      setLiked(result.liked);
-      setCount(result.count);
-      setMessage(result.liked ? "Foto curtida." : "Curtida removida.");
+      const mutation = optimisticLiked
+        ? await supabase.from("photo_likes").insert({
+            photo_id: photoId,
+            user_id: user.id,
+          })
+        : await supabase
+            .from("photo_likes")
+            .delete()
+            .eq("photo_id", photoId)
+            .eq("user_id", user.id);
+
+      // Uma curtida já existente representa o mesmo estado visual desejado.
+      if (mutation.error && !(optimisticLiked && mutation.error.code === "23505")) {
+        setLiked(previousLiked);
+        setCount(previousCount);
+        setMessage(getLikeErrorMessage(mutation.error.code));
+        return;
+      }
+
+      const { count: persistedCount } = await supabase
+        .from("photo_likes")
+        .select("photo_id", { count: "exact", head: true })
+        .eq("photo_id", photoId);
+
+      setLiked(optimisticLiked);
+      setCount(persistedCount ?? Math.max(0, previousCount + (optimisticLiked ? 1 : -1)));
+      setMessage(optimisticLiked ? "Foto curtida." : "Curtida removida.");
+      router.refresh();
     });
   }
 
@@ -96,4 +125,16 @@ export function PhotoLikeButton({
       )}
     </div>
   );
+}
+
+function getLikeErrorMessage(code?: string) {
+  if (code === "42P01" || code === "PGRST205") {
+    return "As curtidas ainda não foram ativadas neste álbum.";
+  }
+
+  if (code === "42501") {
+    return "Não foi possível salvar a curtida neste álbum.";
+  }
+
+  return "Não foi possível atualizar a curtida.";
 }

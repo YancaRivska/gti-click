@@ -156,7 +156,6 @@ export default async function GalleryPage({
               )}
             </Link>
             <PhotoLikeButton
-              eventSlug={event.slug}
               photoId={photo.id}
               initialLiked={likesByPhoto.get(photo.id)?.liked ?? false}
               initialCount={likesByPhoto.get(photo.id)?.count ?? 0}

@@ -110,7 +110,6 @@ export default async function PhotoDetailPage({
         <section className="px-4 pt-4 sm:px-7">
           <div className="media-action-bar">
             <PhotoLikeButton
-              eventSlug={event.slug}
               photoId={photo.id}
               initialLiked={initialLiked}
               initialCount={initialLikeCount}

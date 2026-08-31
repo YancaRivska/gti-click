@@ -28,7 +28,7 @@ create table if not exists public.photo_uploads (
     instagram_handle is null
     or char_length(instagram_handle) <= 50
   ),
-  moderation_status text not null default 'pending' check (
+  moderation_status text not null default 'approved' check (
     moderation_status in ('pending', 'approved', 'rejected')
   ),
   created_at timestamptz not null default now()
@@ -54,7 +54,7 @@ create policy "Consenting users can read event photos"
   for select
   to authenticated
   using (
-    (moderation_status = 'approved' or user_id = (select auth.uid()))
+    moderation_status is distinct from 'rejected'
     and exists (
       select 1
       from public.event_consents consent
@@ -73,8 +73,9 @@ create policy "Users can register their own photos"
   to authenticated
   with check (
     user_id = (select auth.uid())
-    and moderation_status = 'pending'
+    and moderation_status = 'approved'
     and storage_path like event_id || '/' || (select auth.uid())::text || '/%'
+    and now() < timestamptz '2026-09-10 00:00:00-03:00'
     and exists (
       select 1
       from public.event_consents consent
@@ -113,7 +114,8 @@ create policy "Consenting users can upload their own event photos"
     bucket_id = 'event-photos'
     and (storage.foldername(name))[1] = 'aws-summit-sp-2026'
     and (storage.foldername(name))[2] = (select auth.uid())::text
-    and lower(storage.extension(name)) = any (array['jpg', 'png', 'webp'])
+    and lower(storage.extension(name)) = any (array['jpg', 'jpeg', 'png', 'webp'])
+    and now() < timestamptz '2026-09-10 00:00:00-03:00'
     and exists (
       select 1
       from public.event_consents consent
@@ -138,10 +140,7 @@ create policy "Consenting users can view event photos"
       from public.photo_uploads photo
       where photo.storage_path = name
         and photo.event_id = 'aws-summit-sp-2026'
-        and (
-          photo.moderation_status = 'approved'
-          or photo.user_id = (select auth.uid())
-        )
+        and photo.moderation_status is distinct from 'rejected'
     )
     and exists (
       select 1

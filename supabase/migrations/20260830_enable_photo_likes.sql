@@ -13,6 +13,10 @@ create table if not exists public.photo_likes (
 create index if not exists photo_likes_photo_id_idx
   on public.photo_likes (photo_id);
 
+-- A galeria e o Meu GTI filtram uploads por usuário com frequência.
+create index if not exists photo_uploads_user_id_idx
+  on public.photo_uploads (user_id);
+
 alter table public.photo_likes enable row level security;
 
 revoke all on table public.photo_likes from anon, authenticated;

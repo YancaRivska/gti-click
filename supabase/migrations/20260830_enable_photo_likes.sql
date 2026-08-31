@@ -10,8 +10,10 @@ create table if not exists public.photo_likes (
   primary key (photo_id, user_id)
 );
 
-create index if not exists photo_likes_photo_id_idx
-  on public.photo_likes (photo_id);
+-- A chave primária já cobre buscas por photo_id. Este índice atende o Meu GTI,
+-- que contabiliza curtidas pelo usuário.
+create index if not exists photo_likes_user_id_idx
+  on public.photo_likes (user_id);
 
 -- A galeria e o Meu GTI filtram uploads por usuário com frequência.
 create index if not exists photo_uploads_user_id_idx

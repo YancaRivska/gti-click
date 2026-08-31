@@ -6,5 +6,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/evento/:path*"],
+  matcher: ["/evento/:path*", "/meu-gti/:path*", "/auth/:path*"],
 };

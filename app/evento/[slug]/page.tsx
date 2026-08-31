@@ -126,6 +126,11 @@ export default async function EventPage({
                   ? "Envios abertos até 09/09, às 23h59. Publicou, apareceu 💜"
                   : "Os envios terminaram, mas o álbum continua com a galera 💜"}
             </p>
+
+            <Link href="/meu-gti" className="mt-4 flex min-h-12 items-center justify-between rounded-2xl border border-violet-300/10 bg-violet-500/[0.035] px-4 text-xs font-bold text-violet-200 transition hover:border-violet-300/25 hover:bg-violet-500/[0.07]">
+              <span className="flex items-center gap-2"><UsersIcon className="size-4" />Minha jornada GTI</span>
+              <span aria-hidden="true">→</span>
+            </Link>
         </section>
 
         {error === "revoke" && (

@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/browser";
 import {
@@ -10,8 +11,9 @@ import {
   CameraIcon,
   GtiLogo,
   LockIcon,
+  UsersIcon,
 } from "@/components/gti-ui";
-import { enterWithCode } from "./actions";
+import { enterWithCode, registerEventParticipation } from "./actions";
 
 export default function EventEntryPage() {
   const router = useRouter();
@@ -54,6 +56,8 @@ export default function EventEntryPage() {
         return;
       }
     }
+
+    await registerEventParticipation(access.slug);
 
     router.push(`/evento/${access.slug}`);
     router.refresh();
@@ -114,6 +118,10 @@ export default function EventEntryPage() {
             <div className="mt-5 flex items-center justify-center gap-2 text-[0.68rem] text-slate-500">
               <LockIcon className="size-3.5 text-violet-300" />Entrada privada e segura
             </div>
+
+            <Link href="/meu-gti/entrar" className="mt-5 inline-flex min-h-11 items-center justify-center gap-2 text-xs font-bold text-violet-300 transition hover:text-white">
+              <UsersIcon className="size-4" />Já tenho um perfil GTI
+            </Link>
           </section>
         </main>
       </div>

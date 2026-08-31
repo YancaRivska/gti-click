@@ -9,9 +9,11 @@ Execute somente:
 ```text
 migrations/20260829_launch_hardening.sql
 migrations/20260829_auto_publish_team_photos.sql
+migrations/20260830_enable_photo_likes.sql
+migrations/20260831_member_profiles_and_event_history.sql
 ```
 
-O primeiro script consolida colunas e políticas. O segundo converte pendências existentes e configura novos uploads da equipe como `approved`, sem liberar `UPDATE` para o cliente.
+Os dois primeiros scripts consolidam o álbum e o fluxo de publicação. O terceiro ativa curtidas persistentes. O quarto cria os perfis opcionais e o histórico “Minha jornada GTI”. Todos são idempotentes.
 
 ## Projeto novo
 

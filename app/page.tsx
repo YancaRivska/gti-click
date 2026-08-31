@@ -11,6 +11,7 @@ import {
   InstagramIcon,
   MessageIcon,
   SparklesIcon,
+  UsersIcon,
 } from "@/components/gti-ui";
 
 export default function Home() {
@@ -46,6 +47,10 @@ export default function Home() {
           <Link href="/evento/entrar" className="reference-code-link">
             <span>Digite o código do evento</span>
             <span className="reference-scan-icon"><ApertureIcon className="size-4" /></span>
+          </Link>
+
+          <Link href="/meu-gti" className="mt-3 inline-flex min-h-11 items-center justify-center gap-2 text-xs font-bold text-violet-300 transition hover:text-white">
+            <UsersIcon className="size-4" />Minha jornada GTI
           </Link>
         </main>
 

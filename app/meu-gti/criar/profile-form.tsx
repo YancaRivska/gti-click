@@ -16,6 +16,8 @@ export function CreateProfileForm({ userId }: { userId: string }) {
   const [name, setName] = useState("");
   const [instagram, setInstagram] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [loading, setLoading] = useState(false);
   const [complete, setComplete] = useState(false);
   const [message, setMessage] = useState("");
@@ -32,6 +34,16 @@ export function CreateProfileForm({ userId }: { userId: string }) {
 
     if (normalizedInstagram && normalizedInstagram.length > 50) {
       setMessage("Seu @ deve ter no máximo 50 caracteres.");
+      return;
+    }
+
+    if (password.length < 8) {
+      setMessage("Crie uma senha com pelo menos 8 caracteres.");
+      return;
+    }
+
+    if (password !== passwordConfirmation) {
+      setMessage("As senhas não são iguais.");
       return;
     }
 
@@ -58,13 +70,14 @@ export function CreateProfileForm({ userId }: { userId: string }) {
     const { error } = await supabase.auth.updateUser(
       {
         email: email.trim().toLowerCase(),
+        password,
         data: {
           display_name: displayName,
           instagram_handle: normalizedInstagram,
         },
       },
       {
-        emailRedirectTo: `${window.location.origin}/auth/confirm?next=/meu-gti/definir-senha`,
+        emailRedirectTo: `${window.location.origin}/auth/confirm?next=/meu-gti`,
       },
     );
 
@@ -86,7 +99,7 @@ export function CreateProfileForm({ userId }: { userId: string }) {
         </span>
         <h2 className="mt-4 text-lg font-black text-white">Confira seu e-mail</h2>
         <p className="mt-2 text-sm leading-relaxed text-slate-400">
-          Abra o link que enviamos. Depois da confirmação, você criará sua senha do GTI CLICK.
+          Abra o link que enviamos para confirmar seu e-mail e ativar seu perfil do GTI CLICK.
         </p>
         <Link href="/meu-gti" className="secondary-button mt-5 w-full text-sm">Voltar para Minha jornada</Link>
       </section>
@@ -119,8 +132,24 @@ export function CreateProfileForm({ userId }: { userId: string }) {
         </span>
       </label>
 
+      <label className="block">
+        <span className="mb-2 block text-xs font-bold text-slate-300">Crie sua senha</span>
+        <span className="relative block">
+          <LockIcon className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-violet-300" />
+          <input required type="password" minLength={8} value={password} onChange={(event) => setPassword(event.target.value)} className="field min-h-14 pl-11 normal-case" placeholder="Mínimo de 8 caracteres" autoComplete="new-password" />
+        </span>
+      </label>
+
+      <label className="block">
+        <span className="mb-2 block text-xs font-bold text-slate-300">Confirme sua senha</span>
+        <span className="relative block">
+          <LockIcon className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-violet-300" />
+          <input required type="password" minLength={8} value={passwordConfirmation} onChange={(event) => setPasswordConfirmation(event.target.value)} className="field min-h-14 pl-11 normal-case" placeholder="Digite a senha novamente" autoComplete="new-password" />
+        </span>
+      </label>
+
       <p className="rounded-xl bg-violet-500/[0.055] px-3 py-2.5 text-[0.68rem] leading-relaxed text-slate-500">
-        Primeiro confirmamos seu e-mail. Sua senha será criada na etapa seguinte, sem perder o acesso atual.
+        Seu perfil ficará ativo após a confirmação do e-mail, sem perder suas fotos, curtidas ou eventos.
       </p>
 
       {message && <p role="alert" className="feedback-error">{message}</p>}

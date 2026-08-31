@@ -11,9 +11,10 @@ migrations/20260829_launch_hardening.sql
 migrations/20260829_auto_publish_team_photos.sql
 migrations/20260830_enable_photo_likes.sql
 migrations/20260831_member_profiles_and_event_history.sql
+migrations/20260831_optimize_like_indexes.sql
 ```
 
-Os dois primeiros scripts consolidam o álbum e o fluxo de publicação. O terceiro ativa curtidas persistentes. O quarto cria os perfis opcionais e o histórico “Minha jornada GTI”. Todos são idempotentes.
+Os dois primeiros scripts consolidam o álbum e o fluxo de publicação. O terceiro ativa curtidas persistentes. O quarto cria os perfis opcionais e o histórico “Minha jornada GTI”. O quinto remove um índice redundante e adiciona os índices usados pelo perfil. Todos são idempotentes.
 
 ## Projeto novo
 
@@ -21,6 +22,7 @@ Execute nesta ordem:
 
 1. `event_consents.sql`
 2. `photo_uploads.sql`
+3. As migrations acima, na ordem apresentada
 
 Os demais arquivos da raiz são migrations históricas mantidas para rastreabilidade. Não execute todos em sequência sobre uma instalação nova.
 

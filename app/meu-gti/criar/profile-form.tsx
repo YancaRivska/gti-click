@@ -12,6 +12,22 @@ import {
 import { normalizeInstagramHandle } from "@/lib/profile";
 import { createClient } from "@/lib/supabase/browser";
 
+function profileCreationError(code?: string) {
+  if (code === "over_email_send_rate_limit") {
+    return "O limite de e-mails do Supabase foi atingido. Aguarde um pouco ou configure o SMTP do projeto.";
+  }
+
+  if (code === "email_exists" || code === "user_already_exists") {
+    return "Este e-mail já possui uma conta. Use a opção Entrar no Meu GTI.";
+  }
+
+  if (code === "email_address_invalid") {
+    return "Este endereço de e-mail não foi aceito. Confira se ele foi digitado corretamente.";
+  }
+
+  return "Não conseguimos enviar o e-mail de confirmação. Confira a configuração de e-mail do projeto.";
+}
+
 export function CreateProfileForm({ userId }: { userId: string }) {
   const [name, setName] = useState("");
   const [instagram, setInstagram] = useState("");
@@ -84,7 +100,7 @@ export function CreateProfileForm({ userId }: { userId: string }) {
     setLoading(false);
 
     if (error) {
-      setMessage("Não conseguimos enviar a confirmação. Confira o e-mail.");
+      setMessage(profileCreationError(error.code));
       return;
     }
 

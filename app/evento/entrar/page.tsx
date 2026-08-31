@@ -2,7 +2,6 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getEventByCode } from "@/data/events";
 import { createClient } from "@/lib/supabase/browser";
 import {
   AppShell,
@@ -12,7 +11,7 @@ import {
   GtiLogo,
   LockIcon,
 } from "@/components/gti-ui";
-import { enterAdmin } from "./actions";
+import { enterWithCode } from "./actions";
 
 export default function EventEntryPage() {
   const router = useRouter();
@@ -24,25 +23,22 @@ export default function EventEntryPage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const selectedEvent = getEventByCode(code.trim());
+    setLoading(true);
+    const access = await enterWithCode(code);
 
-    if (!selectedEvent) {
-      setLoading(true);
-      const adminAccess = await enterAdmin(code);
-
-      if (adminAccess) {
-        router.push("/admin/moderacao");
-        router.refresh();
-        return;
-      }
-
+    if (access.kind === "invalid") {
       setLoading(false);
       setError(true);
       return;
     }
 
+    if (access.kind === "admin") {
+      router.push("/admin/moderacao");
+      router.refresh();
+      return;
+    }
+
     setAuthError(false);
-    setLoading(true);
 
     const supabase = createClient();
     const {
@@ -59,7 +55,7 @@ export default function EventEntryPage() {
       }
     }
 
-    router.push(`/evento/${selectedEvent.slug}`);
+    router.push(`/evento/${access.slug}`);
     router.refresh();
   }
 

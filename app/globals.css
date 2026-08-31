@@ -964,6 +964,10 @@ label:has(input[type="file"]:not(:disabled)) {
   backdrop-filter: blur(22px);
 }
 
+.mobile-event-nav.is-viewer {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .mobile-event-nav-item {
   position: relative;
   display: flex;

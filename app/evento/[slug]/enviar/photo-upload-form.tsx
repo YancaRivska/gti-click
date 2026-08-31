@@ -397,7 +397,7 @@ export function PhotoUploadForm({
             </Link>
           </section>
 
-          <MobileEventNav eventSlug={eventSlug} active="upload" />
+          <MobileEventNav eventSlug={eventSlug} active="upload" canUpload={false} />
         </div>
       </AppShell>
     );

@@ -11,6 +11,7 @@ import { WatermarkedDownloadButton } from "@/components/watermarked-download-but
 import { PhotoLikeButton } from "@/components/photo-like-button";
 import { hasAdminSession } from "@/lib/admin-auth";
 import { requireEventAccess } from "@/lib/event-access";
+import { isEventUploadOpen } from "@/lib/event-upload";
 import { DeleteOwnPhotoButton } from "./delete-own-photo-button";
 import { SharePhotoButton } from "./share-photo-button";
 
@@ -25,7 +26,8 @@ export default async function PhotoDetailPage({
   searchParams: Promise<{ error?: string | string[] }>;
 }) {
   const { slug, photoId } = await params;
-  const { event, supabase, user } = await requireEventAccess(slug);
+  const { event, role, supabase, user } = await requireEventAccess(slug);
+  const canUpload = role === "contributor" && isEventUploadOpen(event);
   const adminSession = await hasAdminSession();
 
   let { data: photo, error: photoError } = await supabase
@@ -147,7 +149,7 @@ export default async function PhotoDetailPage({
           </section>
         )}
 
-        <MobileEventNav eventSlug={event.slug} active="gallery" />
+        <MobileEventNav eventSlug={event.slug} active="gallery" canUpload={canUpload} />
       </div>
     </AppShell>
   );

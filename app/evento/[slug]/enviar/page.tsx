@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { requireEventAccess } from "@/lib/event-access";
 import { isEventUploadOpen } from "@/lib/event-upload";
 import { PhotoUploadForm } from "./photo-upload-form";
@@ -8,7 +9,11 @@ export default async function PhotoUploadPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { event, user } = await requireEventAccess(slug);
+  const { event, role, user } = await requireEventAccess(slug);
+
+  if (role !== "contributor") {
+    redirect(`/evento/${event.slug}?access=viewer`);
+  }
 
   return (
     <PhotoUploadForm

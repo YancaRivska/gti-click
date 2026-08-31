@@ -27,8 +27,9 @@ export default async function EventPage({
   searchParams: Promise<{ error?: string | string[] }>;
 }) {
   const { slug } = await params;
-  const { event, supabase } = await requireEventAccess(slug);
-  const uploadOpen = isEventUploadOpen(event);
+  const { event, role, supabase } = await requireEventAccess(slug);
+  const uploadWindowOpen = isEventUploadOpen(event);
+  const canUpload = role === "contributor" && uploadWindowOpen;
 
   const eventPhotosResult = await supabase
     .from("photo_uploads")
@@ -81,7 +82,10 @@ export default async function EventPage({
         </section>
 
         <section className="px-5 pt-5 sm:px-7">
-            <span className="event-section-label"><span className="eyebrow-dot" />Evento da galera</span>
+            <span className="event-section-label">
+              <span className="eyebrow-dot" />
+              {role === "contributor" ? "Cobertura do evento" : "Acesso da comunidade"}
+            </span>
             <h2 className="mt-3 text-[1.25rem] leading-tight font-black tracking-[-0.025em] text-white sm:text-2xl">
               A Galera do TI tá no Summit! 📸
             </h2>
@@ -101,24 +105,26 @@ export default async function EventPage({
             </div>
 
             <div className="mt-4 grid gap-2.5">
-              {uploadOpen ? (
+              {canUpload ? (
                 <Link href={`/evento/${event.slug}/enviar`} className="gradient-button w-full text-sm">
                   <CameraIcon className="size-5" />Enviar foto
                 </Link>
-              ) : (
+              ) : role === "contributor" ? (
                 <span className="closed-upload-button" aria-disabled="true">
                   <CameraIcon className="size-5" />Envios encerrados
                 </span>
-              )}
+              ) : null}
               <Link href={`/evento/${event.slug}/galeria`} className="secondary-button w-full text-sm">
                 <ImageIcon className="size-5 text-violet-300" />Ver galeria
               </Link>
             </div>
 
             <p className="mt-4 text-center text-[0.62rem] text-slate-600">
-              {uploadOpen
-                ? "Envios abertos até 09/09, às 23h59. Publicou, apareceu 💜"
-                : "Os envios terminaram, mas o álbum continua com a galera 💜"}
+              {role === "viewer"
+                ? "Acompanhe, curta e baixe os registros da galera 💜"
+                : uploadWindowOpen
+                  ? "Envios abertos até 09/09, às 23h59. Publicou, apareceu 💜"
+                  : "Os envios terminaram, mas o álbum continua com a galera 💜"}
             </p>
         </section>
 
@@ -135,7 +141,7 @@ export default async function EventPage({
           <RevokeConsentButton eventSlug={event.slug} />
         </footer>
 
-        <MobileEventNav eventSlug={event.slug} active="event" />
+        <MobileEventNav eventSlug={event.slug} active="event" canUpload={canUpload} />
       </div>
     </AppShell>
   );

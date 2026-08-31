@@ -28,8 +28,8 @@ export default async function GalleryPage({
   searchParams: Promise<{ deleted?: string | string[]; error?: string | string[] }>;
 }) {
   const { slug } = await params;
-  const { event, supabase, user } = await requireEventAccess(slug);
-  const uploadOpen = isEventUploadOpen(event);
+  const { event, role, supabase, user } = await requireEventAccess(slug);
+  const canUpload = role === "contributor" && isEventUploadOpen(event);
   const query = await searchParams;
   const adminSession = await hasAdminSession();
 
@@ -55,7 +55,7 @@ export default async function GalleryPage({
 
   if (photosError) {
     return (
-      <GalleryShell eventSlug={event.slug}>
+      <GalleryShell eventSlug={event.slug} canUpload={canUpload}>
         <EmptyState icon={<ImageIcon className="size-6" />} title="Não conseguimos carregar a galeria" description="Tente novamente em alguns instantes. Seus clicks continuam protegidos.">
           <Link href={`/evento/${event.slug}`} className="secondary-button mt-6">Voltar ao evento</Link>
         </EmptyState>
@@ -65,13 +65,13 @@ export default async function GalleryPage({
 
   if (!photos.length) {
     return (
-      <GalleryShell eventSlug={event.slug} photoCount={0}>
+      <GalleryShell eventSlug={event.slug} photoCount={0} canUpload={canUpload}>
         <EmptyState icon={<CameraIcon className="size-6" />} title="Nenhum click por aqui ainda" description="Seja o primeiro a registrar esse momento.">
           <Link
-            href={uploadOpen ? `/evento/${event.slug}/enviar` : `/evento/${event.slug}`}
+            href={canUpload ? `/evento/${event.slug}/enviar` : `/evento/${event.slug}`}
             className="gradient-button mt-6"
           >
-            {uploadOpen ? "Enviar uma foto" : "Voltar ao evento"}
+            {canUpload ? "Enviar uma foto" : "Voltar ao evento"}
           </Link>
         </EmptyState>
       </GalleryShell>
@@ -85,7 +85,7 @@ export default async function GalleryPage({
 
   if (signedResult.error) {
     return (
-      <GalleryShell eventSlug={event.slug}>
+      <GalleryShell eventSlug={event.slug} canUpload={canUpload}>
         <EmptyState icon={<ShieldIcon className="size-6" />} title="Não conseguimos carregar a galeria" description="Os links privados não ficaram disponíveis agora. Tente novamente daqui a pouco." />
       </GalleryShell>
     );
@@ -99,7 +99,7 @@ export default async function GalleryPage({
 
   if (!visiblePhotos.length) {
     return (
-      <GalleryShell eventSlug={event.slug}>
+      <GalleryShell eventSlug={event.slug} canUpload={canUpload}>
         <EmptyState icon={<ImageIcon className="size-6" />} title="Fotos indisponíveis agora" description="Tente novamente em alguns instantes." />
       </GalleryShell>
     );
@@ -126,7 +126,7 @@ export default async function GalleryPage({
   });
 
   return (
-    <GalleryShell eventSlug={event.slug} photoCount={visiblePhotos.length}>
+    <GalleryShell eventSlug={event.slug} photoCount={visiblePhotos.length} canUpload={canUpload}>
       {query.deleted === "1" && (
         <p role="status" className="mb-4 rounded-xl border border-emerald-300/10 bg-emerald-400/[0.055] px-3 py-2.5 text-xs text-emerald-100/85">Foto excluída com sucesso.</p>
       )}
@@ -188,10 +188,12 @@ function GalleryShell({
   children,
   eventSlug,
   photoCount,
+  canUpload,
 }: {
   children: React.ReactNode;
   eventSlug: string;
   photoCount?: number;
+  canUpload: boolean;
 }) {
   return (
     <AppShell>
@@ -224,7 +226,7 @@ function GalleryShell({
 
         {children}
 
-        <MobileEventNav eventSlug={eventSlug} active="gallery" />
+        <MobileEventNav eventSlug={eventSlug} active="gallery" canUpload={canUpload} />
       </div>
     </AppShell>
   );

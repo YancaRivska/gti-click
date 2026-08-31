@@ -9,6 +9,7 @@ import {
 } from "@/components/gti-ui";
 import { getEventBySlug } from "@/data/events";
 import { hasEventConsent } from "@/lib/consent";
+import { getEventAccessRole } from "@/lib/event-access-session";
 import { createClient } from "@/lib/supabase/server";
 import { acceptConsent } from "./actions";
 
@@ -23,6 +24,10 @@ export default async function ConsentPage({
   const event = getEventBySlug(slug);
 
   if (!event) {
+    redirect("/evento/entrar");
+  }
+
+  if (!(await getEventAccessRole(event.slug))) {
     redirect("/evento/entrar");
   }
 

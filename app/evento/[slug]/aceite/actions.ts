@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { getEventBySlug } from "@/data/events";
 import { CONSENT_VERSION } from "@/lib/consent";
+import { getEventAccessRole } from "@/lib/event-access-session";
 import { createClient } from "@/lib/supabase/server";
 
 export async function acceptConsent(formData: FormData) {
@@ -11,6 +12,10 @@ export async function acceptConsent(formData: FormData) {
   const event = typeof slug === "string" ? getEventBySlug(slug) : undefined;
 
   if (!event) {
+    redirect("/evento/entrar");
+  }
+
+  if (!(await getEventAccessRole(event.slug))) {
     redirect("/evento/entrar");
   }
 

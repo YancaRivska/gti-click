@@ -337,18 +337,22 @@ export function EmptyState({
 export function MobileEventNav({
   eventSlug,
   active,
+  canUpload = true,
 }: {
   eventSlug: string;
   active: "gallery" | "upload" | "event";
+  canUpload?: boolean;
 }) {
   const items = [
     { key: "gallery", label: "Galeria", href: `/evento/${eventSlug}/galeria`, icon: <ImageIcon className="size-5" />, featured: false },
-    { key: "upload", label: "Enviar", href: `/evento/${eventSlug}/enviar`, icon: <CameraIcon className="size-6" />, featured: true },
+    ...(canUpload
+      ? [{ key: "upload" as const, label: "Enviar", href: `/evento/${eventSlug}/enviar`, icon: <CameraIcon className="size-6" />, featured: true }]
+      : []),
     { key: "event", label: "Evento", href: `/evento/${eventSlug}`, icon: <ApertureIcon className="size-5" />, featured: false },
   ] as const;
 
   return (
-    <nav aria-label="Navegação do evento" className="mobile-event-nav lg:hidden">
+    <nav aria-label="Navegação do evento" className={`mobile-event-nav lg:hidden ${canUpload ? "" : "is-viewer"}`}>
       {items.map((item) => {
         const isActive = active === item.key;
         return (

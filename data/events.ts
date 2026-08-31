@@ -4,7 +4,6 @@ export type Event = {
   nome: string;
   data: string;
   local: string;
-  codigo: string;
   uploadsEnabled: boolean;
   uploadClosesAt: string;
 };
@@ -16,16 +15,10 @@ export const events: Event[] = [
     nome: "AWS Summit São Paulo 2026",
     data: "03/09/2026",
     local: "São Paulo - SP",
-    codigo: "GALERADOTIAWS",
     uploadsEnabled: true,
     uploadClosesAt: "2026-09-10T00:00:00-03:00",
   },
 ];
-
-export function getEventByCode(code: string) {
-  const normalizedCode = code.trim().toUpperCase();
-  return events.find((event) => event.codigo === normalizedCode);
-}
 
 export function getEventBySlug(slug: string) {
   return events.find((event) => event.slug === slug);

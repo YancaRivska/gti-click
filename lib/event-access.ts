@@ -3,6 +3,7 @@ import "server-only";
 import { notFound, redirect } from "next/navigation";
 import { getEventBySlug } from "@/data/events";
 import { hasEventConsent } from "@/lib/consent";
+import { getEventAccessRole } from "@/lib/event-access-session";
 import { createClient } from "@/lib/supabase/server";
 
 export async function requireEventAccess(slug: string) {
@@ -10,6 +11,12 @@ export async function requireEventAccess(slug: string) {
 
   if (!event) {
     notFound();
+  }
+
+  const role = await getEventAccessRole(event.slug);
+
+  if (!role) {
+    redirect("/evento/entrar");
   }
 
   const supabase = await createClient();
@@ -25,5 +32,5 @@ export async function requireEventAccess(slug: string) {
     redirect(`/evento/${event.slug}/aceite`);
   }
 
-  return { event, supabase, user };
+  return { event, role, supabase, user };
 }

@@ -146,6 +146,7 @@ As migrations são idempotentes e podem ser aplicadas pelo Supabase CLI ou manua
 - [ ] Publicar novamente após as variáveis e a migration.
 - [ ] Testar câmera/galeria em um celular real e em HTTPS.
 - [ ] Testar envio, aparição imediata na galeria, download e exclusão própria.
+- [ ] Testar confirmação de e-mail, criação de senha, login e recuperação.
 - [ ] Confirmar que outro usuário não consegue excluir a foto de outra pessoa.
 - [ ] Validar Termos e Política de Privacidade com o responsável jurídico antes do evento.
 
